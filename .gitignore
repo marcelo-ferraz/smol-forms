@@ -1,0 +1,17 @@
+# node.js
+node_modules/
+
+.vscode/settings.json
+.vscode/launch.json
+
+webpack-stats.json
+webpack-stats-production.json
+
+lib/
+dist/
+coverage/
+
+.eslintcache
+
+*.tgz
+.npmrc
