@@ -1,4 +1,6 @@
-import { BindingOptions, MoreGenericConfigForBind, Runnable, SmolChangeHandler } from "./types";
+import {
+    BindingOptions, MoreGenericConfigForBind, Runnable, SmolChangeHandler,
+} from './types';
 
 export function destructureCfg<T>(
     options: keyof T | BindingOptions<T>,
