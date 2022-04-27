@@ -1,9 +1,9 @@
 {
   "name": "smol-forms",
-  "version": "0.0.2-feature-first-batch.0",
+  "version": "0.0.2-feature-first-batch.1",
   "description": "A small framework for forms in react",
   "main": "index.js",
-  "scripts": {    
+  "scripts": {
     "build-dev": "webpack --mode=development --progress --color",
     "build-prod": "webpack --mode=production --progress --color",
     "analyze-build-dev": "webpack --mode=development --progress --color --env=analyze=true",
