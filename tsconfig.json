@@ -1,0 +1,28 @@
+{
+    "compilerOptions": {
+        "lib": [ "es2020", "dom" ],
+        "baseUrl": "./",
+        "outDir": "dist", 
+        "noImplicitAny": true,
+        "esModuleInterop": true,
+        "moduleResolution": "node",
+        "module": "ESNext",
+        "target": "es2019",
+        "jsx": "react",
+        "allowJs": true,
+        "sourceMap": true,        
+        "skipLibCheck": true,
+        "declaration": true,
+        "declarationMap": true,
+        "typeRoots": [
+            "node_modules/@types",
+            "./src/types"
+        ],
+        "paths": {
+            "@images/*": ["./static/images/*"],
+            "@fonts/*": ["./static/fonts/*"]
+        }
+    },
+    "include": ["src", "index.d.ts"],
+    "exclude": ["config", "node_modules"]
+}

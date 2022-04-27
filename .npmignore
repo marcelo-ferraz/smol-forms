@@ -1,0 +1,10 @@
+node_modules/
+coverage/
+config/
+src/
+jest.config.js
+.eslintrc.js
+lint-staged.config.js
+tsconfig.json
+webpack.config.js
+*.tgz
