@@ -33,6 +33,9 @@ function useSmolForms<
 
     const fieldChangeHandler = useMemo<SmolChangeHandler<Entity>>(() => (event, selector, cfg) => {
         const { target } = event;
+
+        if (target) { return; }
+
         const value: unknown = target.type === 'checkbox'
             ? target.checked
             : target.value;
