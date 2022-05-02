@@ -1,5 +1,6 @@
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
+const { ESBuildMinifyPlugin } = require('esbuild-loader');
 
 const getTsandJsAliases = require('./config/getTsandJsAliases');
 const paths = require('./config/paths');
@@ -67,6 +68,11 @@ module.exports = (env, argv = {}) => {
             splitChunks: {
                 chunks: 'all',
             },
+            minimize: false,
+            minimizer: [
+                // Use esbuild to minify
+                new ESBuildMinifyPlugin(),
+            ],
         },
 
         plugins: [
