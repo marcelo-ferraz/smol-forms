@@ -20,15 +20,21 @@ export type BindingOptions<T> = keyof T | Partial<{
 
 export type MoreGenericConfigForBind<T> = {
     mask?: string;
-    parse?: (value: keyof T, entity: T) => unknown;
+    parse?: (value: unknown, key: keyof T, entity: Partial<T>) => unknown;
     validators?: Runnable<string, Partial<{ value: keyof T, entity: T }>>
         | Runnable<string, Partial<{ value: keyof T, entity: T }>>[];
 };
 
-export type BindFunc<
+export type BindingInput<T> = keyof T | BindingOptions<T>;
+
+export interface Bind<
     T,
     R extends MinimumToBindMapper<T> = DefaultBindMappedResult<T>
-> = (input: keyof T | BindingOptions<T>) => R;
+> {
+    (input: BindingInput<T>): R;
+    float(input: BindingInput<T>): R;
+    int(input: BindingInput<T>, radix?: number): R;
+}
 
 export type MinimumToBindMapper<T> = {
     onChange: SmolChangeHandler<T>,
@@ -67,13 +73,14 @@ export type FormHookProps<
     initial?: Partial<Entity>,
     onValidationError?: (errors: ValidationErrors<Entity>) => void,
     registrationMapper?: BindMapper<Entity, R>,
+    onChange?: SmolChangeHandler<Entity>,
 }
 
 export type FormHookResult<
     Entity,
     R extends MinimumToBindMapper<Entity> = DefaultBindMappedResult<Entity>
 > = {
-    bind: BindFunc<Entity, R>;
+    bind: Bind<Entity, R>;
     emitFieldChange: SmolChangeHandler<Entity>;
     entity: Partial<Entity>;
     setEntity: Dispatch<SetStateAction<Partial<Entity>>>;
@@ -87,7 +94,7 @@ export type FormAndFieldAsArg<
 > = {
     entity: Partial<Entity>;
     errors: ValidationErrors<Entity>;
-    bind: BindFunc<Entity, R>;
+    bind: Bind<Entity, R>;
     changeHandler: SmolChangeHandler<Entity>;
 }
 
@@ -105,17 +112,25 @@ export type Runnable<R, T = unknown> = (val: T) => R;
 
 export type UnbeknownstValues<T> = { [Property in keyof T]: unknown };
 
-export type SmolFormRef<Entity> = FormHookResult<Entity>;
+export type SmolFormRef<
+    Entity,
+    R extends MinimumToBindMapper<Entity> = DefaultBindMappedResult<Entity>
+> = FormHookResult<Entity, R>;
 
-export type SmolFormProps<Entity> = {
-    initial?: Partial<Entity>;
-    form?: FormFromFunc<Entity>;
-    formFields?: FormFieldsFromFunc<Entity>;
+export type SmolFormProps<
+    Entity,
+    R extends MinimumToBindMapper<Entity> = DefaultBindMappedResult<Entity>
+> = FormHookProps<Entity, R> & {
+    form?: FormFromFunc<Entity, R>;
+    formFields?: FormFieldsFromFunc<Entity, R>;
     top?: ReactElement | string;
     bottom?: ReactElement | string;
-    onChange?: SmolFormFactoryProps<Entity>['onChange']
-    onValidationError?(e: ValidationErrors<Entity>): void;
-    elements?: SmolFormFactoryProps<Entity>['elements'];
+    elements?: {
+        container?: ReactElement;
+        cell?: ReactElement;
+        top?: ReactElement;
+        bottom?: ReactElement;
+    };
 };
 
 export type SmolFormFactoryProps<

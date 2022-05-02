@@ -1,17 +1,17 @@
 import {
+    BindingInput,
     BindingOptions, MoreGenericConfigForBind, Runnable, SmolChangeHandler,
 } from './types';
 
 export function destructureCfg<T>(
-    options: keyof T | BindingOptions<T>,
+    options: BindingInput<T>,
 ): [keyof T, MoreGenericConfigForBind<T>] {
     let selector = options as keyof T;
     let cfg: MoreGenericConfigForBind<T> = null;
     if (typeof selector !== 'string') {
         const firstProperty = Object.entries(selector)[0];
         selector = firstProperty[0] as keyof T;
-        // eslint-disable-next-line prefer-destructuring
-        cfg = firstProperty[1];
+        cfg = firstProperty[1] as MoreGenericConfigForBind<T>;
     }
 
     return [

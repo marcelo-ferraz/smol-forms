@@ -4,6 +4,7 @@ import {
 import defaultRegistration from './defaultRegistration';
 
 import { destructureCfg, runOrReduce } from './helpers';
+import { toInt, toFloat } from './parsers';
 import {
     FormHookProps,
     FormHookResult,
@@ -11,14 +12,19 @@ import {
     DefaultBindMappedResult,
     MinimumToBindMapper,
     SmolChangeHandler,
-    BindFunc,
+    MoreGenericConfigForBind,
+    BindingInput,
+    Bind,
 } from './types';
 
 function useSmolForms<
     Entity,
     R extends MinimumToBindMapper<Entity> = DefaultBindMappedResult<Entity>
 >({
-    initial, onValidationError, registrationMapper,
+    initial,
+    onValidationError,
+    registrationMapper,
+    onChange: changeCallback,
 }: FormHookProps<Entity, R>): FormHookResult<Entity, R> {
     const [entity, setEntity] = useState<Partial<Entity>>(initial ?? {});
     const [validationErrors, setValidationErrors] = useState<ValidationErrors<Entity>>({});
@@ -31,50 +37,101 @@ function useSmolForms<
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [validationErrors]);
 
-    const fieldChangeHandler = useMemo<SmolChangeHandler<Entity>>(() => (event, selector, cfg) => {
-        const { target } = event;
+    const fieldChangeHandler = useCallback<SmolChangeHandler<Entity>>(
+        (event, selector, cfg) => {
+            const { target } = event;
 
-        if (target) { return; }
+            if (!target) { return; }
 
-        const value: unknown = target.type === 'checkbox'
-            ? target.checked
-            : target.value;
+            let value: unknown = target.type === 'checkbox'
+                ? target.checked
+                : target.value;
 
-        const validation = cfg?.validators;
+            if (cfg?.parse) {
+                value = cfg.parse(value, selector, entity);
 
-        const errors = runOrReduce<string>(validation, { value, entity });
-
-        if (errors.length) {
-            setValidationErrors((prevState) => ({
-                ...prevState,
-                [selector]: [
-                    ...prevState[selector] ?? [],
-                    ...errors,
-                ],
-            }));
-        }
-
-        setEntity((prevState) => {
-            const nextState = { ...prevState };
-
-            nextState[selector] = value as Entity[keyof Entity];
-            return nextState;
-        });
-    }, [entity]);
-
-    const bind = useCallback<BindFunc<Entity, R>>(
-        (options): R => {
-            const [selector, cfg] = destructureCfg<Entity>(options);
-
-            if (registrationMapper) {
-                return registrationMapper(
-                    selector, fieldChangeHandler, cfg, validationErrors, entity,
-                );
+                if (!value) { return; }
             }
 
-            return defaultRegistration<Entity>(
-                selector, fieldChangeHandler, cfg, validationErrors, entity,
-            ) as unknown as R;
+            const validation = cfg?.validators;
+
+            const errors = runOrReduce<string>(validation, { value, entity });
+
+            if (errors.length) {
+                setValidationErrors((prevState) => ({
+                    ...prevState,
+                    [selector]: [
+                        ...prevState[selector] ?? [],
+                        ...errors,
+                    ],
+                }));
+            }
+
+            if (changeCallback) {
+                if (changeCallback) {
+                    changeCallback(event, selector, cfg);
+                }
+            }
+
+            setEntity((prevState) => {
+                const nextState = { ...prevState };
+
+                nextState[selector] = value as Entity[keyof Entity];
+                return nextState;
+            });
+        }, [changeCallback, entity],
+    );
+
+    const bind = useMemo<Bind<Entity, R>>(
+        () => {
+            const coreFunc = (
+                selector: keyof Entity,
+                cfg: MoreGenericConfigForBind<Entity>,
+                changeHandler: SmolChangeHandler<Entity>,
+            ) => {
+                if (registrationMapper) {
+                    return registrationMapper(
+                        selector, changeHandler, cfg, validationErrors, entity,
+                    );
+                }
+
+                return defaultRegistration<Entity>(
+                    selector, changeHandler, cfg, validationErrors, entity,
+                ) as unknown as R;
+            };
+
+            const mainFunc = (input: BindingInput<Entity>): R => {
+                const [selector, cfg] = destructureCfg<Entity>(input);
+
+                return coreFunc(selector, cfg, fieldChangeHandler);
+            };
+
+            mainFunc.int = (input: BindingInput<Entity>, radix = 10) => {
+                const [selector, config] = destructureCfg<Entity>(input);
+
+                const parse = (value: unknown) => toInt(value, radix);
+
+                return coreFunc(
+                    selector,
+                    config ? { ...config, parse } : { parse },
+                    fieldChangeHandler,
+                );
+            };
+
+            mainFunc.float = (input: BindingInput<Entity>) => {
+                const [selector, config] = destructureCfg<Entity>(input);
+
+                const parse = toFloat;
+
+                return coreFunc(
+                    selector,
+                    config ? { ...config, parse } : { parse },
+                    fieldChangeHandler,
+                );
+            };
+
+            return mainFunc;
+
             // eslint-disable-next-line react-hooks/exhaustive-deps
         }, [entity, fieldChangeHandler, validationErrors],
     );

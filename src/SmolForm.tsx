@@ -2,33 +2,39 @@ import React, {
     ReactElement, forwardRef, useImperativeHandle, ForwardedRef,
 } from 'react';
 import SmolFormFactory from './SmolFormFactory';
-import { SmolFormRef, SmolFormProps } from './types';
+import {
+    SmolFormRef, SmolFormProps, MinimumToBindMapper, DefaultBindMappedResult,
+} from './types';
 import useSmolForms from './useSmolForms';
-import useToAddCallbackOnChange from './useToAddCallbackOnChange';
 
-function SmolFormInner<Entity>({
+function SmolFormInner<
+    Entity,
+    R extends MinimumToBindMapper<Entity> = DefaultBindMappedResult<Entity>
+>({
     initial = {},
     form,
     formFields,
     onChange,
+    registrationMapper,
     onValidationError,
     top,
     bottom,
-}: SmolFormProps<Entity>,
-ref: ForwardedRef<SmolFormRef<Entity>>): ReactElement {
+    elements,
+}: SmolFormProps<Entity, R>,
+ref: ForwardedRef<SmolFormRef<Entity, R>>): ReactElement {
     const {
         entity,
         setEntity,
         errors,
-        bind: binderFromHook,
+        bind,
         setErrors,
         emitFieldChange,
-    } = useSmolForms<Entity>({
+    } = useSmolForms<Entity, R>({
         initial,
+        onChange,
         onValidationError,
+        registrationMapper,
     });
-
-    const bind = useToAddCallbackOnChange(binderFromHook, onChange);
 
     useImperativeHandle(ref, () => ({
         bind,
@@ -47,7 +53,7 @@ ref: ForwardedRef<SmolFormRef<Entity>>): ReactElement {
     ]);
 
     return (
-        <SmolFormFactory
+        <SmolFormFactory<Entity, R>
             entity={entity}
             errors={errors}
             form={form}
@@ -56,6 +62,7 @@ ref: ForwardedRef<SmolFormRef<Entity>>): ReactElement {
             bind={bind}
             top={top}
             bottom={bottom}
+            elements={elements}
         />
     );
 }
