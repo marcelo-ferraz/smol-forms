@@ -1,6 +1,6 @@
 {
   "name": "smol-forms",
-  "version": "0.0.2-feature-first-batch.7",
+  "version": "0.0.2-nightly.0",
   "description": "A small framework for forms in react",
   "main": "index.js",
   "scripts": {

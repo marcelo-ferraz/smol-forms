@@ -27,6 +27,7 @@ module.exports = (env, argv = {}) => {
         entry: {
             index: './src/index',
             validators: './src/validators',
+            parsers: './src/parsers',
             types: './src/types',
         },
 
