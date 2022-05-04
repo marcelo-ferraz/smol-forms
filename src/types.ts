@@ -12,6 +12,7 @@ export type DefaultBindMappedResult<T> = {
 export type BindingOptions<T> = keyof T | Partial<{
     [key in keyof T]: {
         mask?: string;
+        defaultValue?: unknown;
         parse?: (value: T[key], entity: T) => unknown;
         validators?: Runnable<string, { value: T[key], entity: T }>
             | Runnable<string, { value: T[key], entity: T }>[];
@@ -20,6 +21,7 @@ export type BindingOptions<T> = keyof T | Partial<{
 
 export type MoreGenericConfigForBind<T> = {
     mask?: string;
+    defaultValue?: unknown;
     parse?: (value: unknown, key: keyof T, entity: Partial<T>) => unknown;
     validators?: Runnable<string, Partial<{ value: keyof T, entity: T }>>
         | Runnable<string, Partial<{ value: keyof T, entity: T }>>[];
@@ -34,6 +36,7 @@ export interface Bind<
     (input: BindingInput<T>): R;
     float(input: BindingInput<T>): R;
     int(input: BindingInput<T>, radix?: number): R;
+    str(input: BindingInput<T>): R;
 }
 
 export type MinimumToBindMapper<T> = {
@@ -72,7 +75,7 @@ export type FormHookProps<
 > = {
     initial?: Partial<Entity>,
     onValidationError?: (errors: ValidationErrors<Entity>) => void,
-    registrationMapper?: BindMapper<Entity, R>,
+    bindingMapper?: BindMapper<Entity, R>,
     onChange?: SmolChangeHandler<Entity>,
 }
 
