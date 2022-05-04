@@ -5,7 +5,7 @@ import SmolFormFactory from './SmolFormFactory';
 import {
     SmolFormRef, SmolFormProps, MinimumToBindMapper, DefaultBindMappedResult,
 } from './types';
-import useSmolForms from './useSmolForms';
+import useSmolForms from './useSmolForm';
 
 function SmolFormInner<
     Entity,
@@ -15,7 +15,7 @@ function SmolFormInner<
     form,
     formFields,
     onChange,
-    registrationMapper,
+    bindingMapper,
     onValidationError,
     top,
     bottom,
@@ -33,7 +33,7 @@ ref: ForwardedRef<SmolFormRef<Entity, R>>): ReactElement {
         initial,
         onChange,
         onValidationError,
-        registrationMapper,
+        bindingMapper,
     });
 
     useImperativeHandle(ref, () => ({

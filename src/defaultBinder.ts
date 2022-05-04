@@ -20,6 +20,6 @@ export default function defaultBinder<Entity>(
         onChange: (ev: SmolChangeEvent) => fieldChangeHandler(ev, selector, cfg),
         error: !!(validationErrors[selector]),
         helperText: (validationErrors)[selector] as string ?? '',
-        value: (entity)[selector] ?? '',
+        value: (entity)[selector] ?? cfg?.defaultValue ?? null,
     };
 }
