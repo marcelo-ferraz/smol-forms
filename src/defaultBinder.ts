@@ -1,14 +1,14 @@
 import {
-    DefaultBindMappedResult,
+    SmolInputChangeHandler,
     MoreGenericConfigForBind,
-    SmolChangeEvent,
-    SmolChangeHandler,
     UnbeknownstValues,
+    DefaultBindMappedResult,
+    SmolChangeEvent,
 } from './types';
 
 export default function defaultBinder<Entity>(
     selector: keyof Entity,
-    fieldChangeHandler: SmolChangeHandler<Entity>,
+    fieldChangeHandler: SmolInputChangeHandler<Entity>,
     cfg: MoreGenericConfigForBind<Entity>,
     validationErrors: UnbeknownstValues<Entity>,
     entity: Partial<Entity>,

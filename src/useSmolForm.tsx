@@ -11,7 +11,7 @@ import {
     ValidationErrors,
     DefaultBindMappedResult,
     MinimumToBindMapper,
-    SmolChangeHandler,
+    SmolInputChangeHandler,
     MoreGenericConfigForBind,
     BindingInput,
     Bind,
@@ -37,7 +37,7 @@ function useSmolForms<
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [validationErrors]);
 
-    const fieldChangeHandler = useCallback<SmolChangeHandler<Entity>>(
+    const fieldChangeHandler = useCallback<SmolInputChangeHandler<Entity>>(
         (event, selector, cfg) => {
             const { target } = event;
 
@@ -67,16 +67,25 @@ function useSmolForms<
                 }));
             }
 
-            if (changeCallback) {
-                if (changeCallback) {
-                    changeCallback(event, selector, cfg);
-                }
-            }
-
             setEntity((prevState) => {
-                const nextState = { ...prevState };
+                let nextState = { ...prevState };
 
                 nextState[selector] = value as Entity[keyof Entity];
+
+                if (changeCallback) {
+                    const res = changeCallback({
+                        selector,
+                        prevState,
+                        nextState,
+                        cfg,
+                        event,
+                    });
+
+                    if (res !== undefined) {
+                        nextState = res;
+                    }
+                }
+
                 return nextState;
             });
         }, [changeCallback, entity],
@@ -87,7 +96,7 @@ function useSmolForms<
             const coreFunc = (
                 selector: keyof Entity,
                 cfg: MoreGenericConfigForBind<Entity>,
-                changeHandler: SmolChangeHandler<Entity>,
+                changeHandler: SmolInputChangeHandler<Entity>,
             ) => {
                 if (bindingMapper) {
                     return bindingMapper(

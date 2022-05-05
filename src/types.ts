@@ -1,7 +1,7 @@
 import { Dispatch, ReactElement, SetStateAction } from 'react';
 
 export type DefaultBindMappedResult<T> = {
-    onChange: SmolChangeHandler<T>;
+    onChange: SmolInputChangeHandler<T>;
     error: boolean;
     name: string;
     helperText: string;
@@ -40,7 +40,7 @@ export interface Bind<
 }
 
 export type MinimumToBindMapper<T> = {
-    onChange: SmolChangeHandler<T>,
+    onChange: SmolInputChangeHandler<T>,
     'data-key': string | number | symbol,
 };
 
@@ -49,7 +49,7 @@ export type BindMapper<
     R extends MinimumToBindMapper<Entity>
 > = (
     selector: keyof Entity,
-    fieldChangeHandler: SmolChangeHandler<Entity>,
+    fieldChangeHandler: SmolInputChangeHandler<Entity>,
     cfg: MoreGenericConfigForBind<Entity>,
     validationErrors: UnbeknownstValues<Entity>,
     entity: Partial<Entity>,
@@ -63,11 +63,19 @@ export type SmolChangeEvent = {
     };
 };
 
-export type SmolChangeHandler<T> = (
+export type SmolInputChangeHandler<T> = (
     ev: SmolChangeEvent,
     selector?: keyof T,
     cfg?: MoreGenericConfigForBind<T>,
 ) => void;
+
+export type SmolChangeCallback<T> = (args: {
+    event: SmolChangeEvent;
+    selector?: keyof T;
+    cfg?: MoreGenericConfigForBind<T>;
+    nextState: Partial<T>;
+    prevState: Partial<T>;
+}) => Partial<T> | undefined;
 
 export type FormHookProps<
     Entity,
@@ -76,7 +84,7 @@ export type FormHookProps<
     initial?: Partial<Entity>,
     onValidationError?: (errors: ValidationErrors<Entity>) => void,
     bindingMapper?: BindMapper<Entity, R>,
-    onChange?: SmolChangeHandler<Entity>,
+    onChange?: SmolChangeCallback<Entity>,
 }
 
 export type FormHookResult<
@@ -84,7 +92,7 @@ export type FormHookResult<
     R extends MinimumToBindMapper<Entity> = DefaultBindMappedResult<Entity>
 > = {
     bind: Bind<Entity, R>;
-    emitFieldChange: SmolChangeHandler<Entity>;
+    emitFieldChange: SmolInputChangeHandler<Entity>;
     entity: Partial<Entity>;
     setEntity: Dispatch<SetStateAction<Partial<Entity>>>;
     errors: ValidationErrors<Entity>;
@@ -98,7 +106,7 @@ export type FormAndFieldAsArg<
     entity: Partial<Entity>;
     errors: ValidationErrors<Entity>;
     bind: Bind<Entity, R>;
-    changeHandler: SmolChangeHandler<Entity>;
+    changeHandler: SmolChangeCallback<Entity>;
 }
 
 export type FormFromFunc<
@@ -144,7 +152,7 @@ export type SmolFormFactoryProps<
     errors?: ValidationErrors<Entity>;
     form?: FormFromFunc<Entity, R>;
     formFields?: FormFieldsFromFunc<Entity, R>;
-    onChange?: FormHookResult<Entity, R>['emitFieldChange'];
+    onChange?: SmolChangeCallback<Entity>;
     bind?: FormHookResult<Entity, R>['bind'];
     top?: ReactElement | string;
     bottom?: ReactElement | string;

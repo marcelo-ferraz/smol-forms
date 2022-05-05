@@ -1,6 +1,7 @@
 import {
     BindingInput,
-    BindingOptions, MoreGenericConfigForBind, Runnable, SmolChangeHandler,
+    MoreGenericConfigForBind,
+    Runnable,
 } from './types';
 
 export function destructureCfg<T>(
@@ -30,19 +31,19 @@ export function runOrReduce<R, T = unknown>(actions: Runnable<R, T> | Runnable<R
     return result.filter((res) => res);
 }
 
-export function addCallbackOnChange<Entity>(
-    options: keyof Entity | BindingOptions<Entity>,
-    inputChange: SmolChangeHandler<Entity>,
-    changeCallback: SmolChangeHandler<Entity>,
-) {
-    const [selector, cfg] = destructureCfg(options);
+// export function addCallbackOnChange<Entity>(
+//     options: keyof Entity | BindingOptions<Entity>,
+//     inputChange: SmolInputChangeHandler<Entity>,
+//     changeCallback: SmolInputChangeHandler<Entity>,
+// ) {
+//     const [selector, cfg] = destructureCfg(options);
 
-    const changeHandler: SmolChangeHandler<Entity> = (ev) => {
-        inputChange(ev, selector, cfg);
+//     const changeHandler: SmolInputChangeHandler<Entity> = (ev) => {
+//         inputChange(ev, selector, cfg);
 
-        if (changeCallback) {
-            changeCallback(ev, selector, cfg);
-        }
-    };
-    return changeHandler;
-}
+//         if (changeCallback) {
+//             changeCallback(ev, selector, cfg);
+//         }
+//     };
+//     return changeHandler;
+// }
