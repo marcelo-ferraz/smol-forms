@@ -3,19 +3,19 @@ import React, {
 } from 'react';
 import SmolFormFactory from './SmolFormFactory';
 import {
-    SmolFormRef, SmolFormProps, MinimumToBindMapper, DefaultBindMappedResult,
+    SmolFormRef, SmolFormProps, MinimumToBind, DefaultBindProps,
 } from './types';
 import useSmolForms from './useSmolForm';
 
 function SmolFormInner<
     Entity,
-    R extends MinimumToBindMapper<Entity> = DefaultBindMappedResult<Entity>
+    R extends MinimumToBind<Entity> = DefaultBindProps<Entity>
 >({
     initial = {},
     form,
     formFields,
     onChange,
-    bindingMapper,
+    adapter,
     onValidationError,
     top,
     bottom,
@@ -24,7 +24,6 @@ function SmolFormInner<
 ref: ForwardedRef<SmolFormRef<Entity, R>>): ReactElement {
     const {
         entity,
-        setEntity,
         errors,
         bind,
         setErrors,
@@ -33,20 +32,18 @@ ref: ForwardedRef<SmolFormRef<Entity, R>>): ReactElement {
         initial,
         onChange,
         onValidationError,
-        bindingMapper,
+        adapter,
     });
 
     useImperativeHandle(ref, () => ({
         bind,
         entity,
-        setEntity,
         errors,
         setErrors,
         emitFieldChange,
     }), [
         bind,
         entity,
-        setEntity,
         errors,
         setErrors,
         emitFieldChange,

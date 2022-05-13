@@ -1,10 +1,10 @@
 import styled from '@emotion/styled';
 import React, { useMemo } from 'react';
-import { SmolFormFactoryProps, MinimumToBindMapper } from './types';
+import { SmolFormFactoryProps, MinimumToBind } from './types';
 
 export default function SmolFormFactory<
     Entity,
-    R extends MinimumToBindMapper<Entity>,
+    R extends MinimumToBind<Entity>,
 >({
     entity,
     errors,
