@@ -4,7 +4,6 @@ import {
     useMemo,
     useEffect,
 } from 'react';
-import { debounce } from 'debounce';
 
 import binderFactory from './binderFactory';
 
@@ -24,10 +23,6 @@ import {
 // I could just have the spread, but it wouldnt copy nested objs
 const oldSchoolDeepCopy = (obj: unknown) => JSON.parse(JSON.stringify(obj));
 
-// function useDebounce<T>(fn: T, deps: React.DependencyList, interval = 300, immediate = boolean) {
-//     return useMemo(debounce(fn, interval, immediate), deps);
-// }
-
 function useSmolForms<
     Entity,
     FieldBoundProps extends MinimumToBind<Entity> = DefaultBindProps<Entity>
@@ -36,7 +31,6 @@ function useSmolForms<
     onValidationError,
     adapter,
     onChange: changeCallback,
-    debounceChange = 300,
 }: Partial<FormHookProps<Entity, FieldBoundProps>> = {})
 : FormHookResult<Entity, FieldBoundProps> {
     const [entity, setEntity] = useState<DisplayNValue<Entity>>({
@@ -101,13 +95,19 @@ function useSmolForms<
                 selector,
                 cfg,
             ) => {
-                const { target } = event;
+                let value: unknown;
 
-                if (!target) { return; }
+                if (cfg?.parser) {
+                    value = cfg?.parser(event);
+                } else {
+                    const { target } = event;
 
-                const value: unknown = target.type === 'checkbox'
-                    ? target.checked
-                    : target.value;
+                    if (!target) { return; }
+
+                    value = target.type === 'checkbox'
+                        ? target.checked
+                        : target.value;
+                }
 
                 setEntity((prevState) => {
                     // copy previous state for changing
@@ -190,8 +190,8 @@ function useSmolForms<
                 });
             };
 
-        return handler; //debounce(handler, debounceChange);
-    }, [changeCallback, /*debounceChange,*/ validate]);
+        return handler;
+    }, [changeCallback, validate]);
 
     const bind = useMemo<Bind<Entity, FieldBoundProps>>(
         () => binderFactory(

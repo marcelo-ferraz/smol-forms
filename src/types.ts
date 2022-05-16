@@ -1,5 +1,11 @@
 import { Dispatch, ReactElement, SetStateAction } from 'react';
 
+type OnlyOne<T> = keyof T extends infer K
+    ? K extends unknown
+    ? { [key in keyof T]?: key extends K ? T[key] : never }
+    : never
+    : never;
+
 export type DefaultBindProps<Entity> = {
     onChange: SmolInputChangeHandler<Entity>;
     error: boolean;
@@ -9,28 +15,41 @@ export type DefaultBindProps<Entity> = {
     'data-key': string | number | symbol;
 };
 
-export type BindingOptionsObj<Entity> = Partial<{
+export type Validator<
+    Entity,
+    key extends keyof Entity
+> = Runnable<string, { value: Entity[key], entity: Entity }>
+| Runnable<string, { value: Entity[key], entity: Entity }>[];
+
+export type BindingOptionsObj<Entity> = OnlyOne<{
     [key in keyof Entity]: {
         // still not supported
         // mask?: string;
+        changeWait?: number;
         defaultValue?: unknown;
+        parser?: Runnable;
         type?: (value: Entity[key], entity: Entity) => [unknown, unknown];
-        validators?: Runnable<string, { value: Entity[key], entity: Entity }>
-            | Runnable<string, { value: Entity[key], entity: Entity }>[];
-    };
+        validators?: Validator<Entity, key>;
+    }
 }>;
-
-export type BindingOptions<Entity> = keyof Entity | BindingOptionsObj<Entity>;
 
 export type MoreGenericConfigForBind<Entity> = {
     mask?: string;
+    changeWait?: number;
     defaultValue?: unknown;
+    parser?: Runnable;
     type?: (value: unknown, key: keyof Entity, entity: Partial<Entity>) => [unknown, unknown];
     validators?: Runnable<string, Partial<{ selector: keyof Entity, value: unknown, entity: Entity }>>
         | Runnable<string, Partial<{ selector: keyof Entity, value: unknown, entity: Entity }>>[];
 };
 
-export type BindingInput<Entity> = keyof Entity | BindingOptions<Entity>;
+export type BindingInput<Entity> = keyof Entity
+| BindingOptionsObj<Entity>
+| OnlyOne<{
+    [key in keyof Entity]:
+        Runnable
+        | (Validator<Entity, key>[]);
+}>;
 
 export interface Bind<
     Entity,
@@ -39,7 +58,7 @@ export interface Bind<
     (input: BindingInput<Entity>): FieldBoundProps;
     float(input: BindingInput<Entity>, args?: NumberArgs): FieldBoundProps;
     int(input: BindingInput<Entity>, args?: IntArgs): FieldBoundProps;
-    str(input: BindingInput<Entity>): FieldBoundProps;
+    nullable(input: BindingInput<Entity>): FieldBoundProps;
 }
 
 export type MinimumToBind<T> = {
@@ -47,7 +66,7 @@ export type MinimumToBind<T> = {
     'data-key': string | number | symbol,
 };
 
-export type BindFuncArgs<Entity> = {
+export type BindArgs<Entity> = {
     selector: keyof Entity,
     fieldChangeHandler: SmolInputChangeHandler<Entity>,
     cfg: MoreGenericConfigForBind<Entity>,
@@ -55,13 +74,14 @@ export type BindFuncArgs<Entity> = {
     entity: DisplayNValue<Entity>,
 }
 
-export type BindFunc<
+export type BindAdapterArgs<Entity> = BindArgs<Entity> & {
+    bind: () => DefaultBindProps<Entity>,
+}
+
+export type BindAdapter<
     Entity,
-    FieldBoundProps extends MinimumToBind<Entity>
-> = (
-    args: BindFuncArgs<Entity>
-    & { bind: BindFunc<Entity, DefaultBindProps<Entity>> }
-) => FieldBoundProps;
+    FieldBoundProps extends MinimumToBind<Entity> = DefaultBindProps<Entity>
+> = (args: BindAdapterArgs<Entity>) => FieldBoundProps;
 
 export type SmolChangeEvent = {
     target: {
@@ -71,11 +91,13 @@ export type SmolChangeEvent = {
     };
 };
 
-export type SmolInputChangeHandler<Entity> = (
-    ev: SmolChangeEvent,
-    selector?: keyof Entity,
-    cfg?: MoreGenericConfigForBind<Entity>,
-) => void;
+export type SmolInputChangeHandler<Entity> = MoreGenericConfigForBind<Entity>['parser'] | (
+    (
+        ev: SmolChangeEvent,
+        selector?: keyof Entity,
+        cfg?: MoreGenericConfigForBind<Entity>,
+    ) => void
+);
 
 export type SmolChangeCallback<Entity> = (args: {
     event: SmolChangeEvent;
@@ -91,11 +113,10 @@ export type FormHookProps<
     Entity,
     FieldBoundProps extends MinimumToBind<Entity> = DefaultBindProps<Entity>
 > = {
-    initial?: Partial<Entity>,
-    onValidationError?: (errors: ValidationErrors<Entity>) => void,
-    adapter?: BindFunc<Entity, FieldBoundProps>,
-    onChange?: SmolChangeCallback<Entity>,
-    debounceChange?: number,
+    initial?: Partial<Entity>;
+    onValidationError?: (errors: ValidationErrors<Entity>) => void;
+    adapter?: BindAdapter<Entity, FieldBoundProps>;
+    onChange?: SmolChangeCallback<Entity>;
 }
 
 export type FormHookResult<
@@ -130,7 +151,7 @@ export type FormFieldsFromFunc<
     FieldBoundProps extends MinimumToBind<Entity> = DefaultBindProps<Entity>
 > = (args: FormAndFieldAsArg<Entity, FieldBoundProps>) => ReactElement[];
 
-export type Runnable<R, T = unknown> = (val: T) => R;
+export type Runnable<R = unknown, T = unknown> = (val: T) => R;
 
 export type UnbeknownstValues<T> = { [Property in keyof T]: unknown };
 

@@ -20,7 +20,6 @@ const floatRegex = /^\d+\.?\d*$/;
 const intRegex = /^\d+$/;
 
 export const int = (value: unknown, { radix, ...args }: IntArgs = {}) => {
-
     const val = value.toString();
 
     if (!value || !intRegex.test(val)) {

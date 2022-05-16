@@ -11,7 +11,7 @@ import {
     DisplayNValue,
     IntArgs,
     NumberArgs,
-    BindFunc,
+    BindAdapter,
 } from './types';
 
 function binderFactory<
@@ -20,7 +20,7 @@ function binderFactory<
 >(
     entity: DisplayNValue<Entity>,
     validationErrors: ValidationErrors<Entity>,
-    adapter: BindFunc<Entity, FieldBoundProps>,
+    adapter: BindAdapter<Entity, FieldBoundProps>,
     fieldChangeHandler: SmolInputChangeHandler<Entity>,
 ) {
     const coreFunc = (
@@ -80,10 +80,10 @@ function binderFactory<
         );
     };
 
-    mainFunc.str = (input: BindingInput<Entity>) => {
+    mainFunc.nullable = (input: BindingInput<Entity>) => {
         const [selector, config] = destructureCfg<Entity>(input);
 
-        const defaultValue = '';
+        const defaultValue: unknown = null;
 
         return coreFunc(
             selector,
