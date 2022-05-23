@@ -132,6 +132,23 @@ describe('hook: useSmolForm', () => {
             expect(OneDotTwo).toStrictEqual(['1.2', 1.2]);
             expect(OneDotTwoDot).toStrictEqual(['1.2', 1.2]);
         });
+
+        it('shouldn\'t call the validation if the value is not a number', () => {
+            const { result } = renderHook(() => useSmolForm<TestEntity>());
+
+            const validator = jest.fn();
+
+            const write = curryChange(
+                result
+                    .current
+                    .bind
+                    .float({ floatValue: [validator] }),
+            );
+
+            write('a');
+
+            expect(validator).not.toBeCalled();
+        });
     });
 
     describe('bind: int', () => {
@@ -171,6 +188,23 @@ describe('hook: useSmolForm', () => {
             expect(one).toStrictEqual(['1', 1]);
             expect(oneB).toStrictEqual(['1', 1]);
             expect(oneTwo).toStrictEqual(['12', 12]);
+        });
+
+        it('shouldn\'t call the validation if the value is not a number', () => {
+            const { result } = renderHook(() => useSmolForm<TestEntity>());
+
+            const validator = jest.fn();
+
+            const write = curryChange(
+                result
+                    .current
+                    .bind
+                    .int({ intValue: [validator] }),
+            );
+
+            write('a');
+
+            expect(validator).not.toBeCalled();
         });
     });
 
@@ -302,6 +336,60 @@ describe('hook: useSmolForm', () => {
 
                 expect(valueFound).toBe(expectedValue);
             });
+        });
+    });
+
+    describe('Validation', () => {
+        it('should be called with the value, the entity and the selector', () => {
+            const { result } = renderHook(() => useSmolForm<TestEntity>());
+
+            const expectedValue = randomInt(255);
+            const selector = 'intValue';
+            const entity = { [selector]: expectedValue };
+
+            const validator = jest.fn();
+
+            const write = curryChange(
+                result
+                    .current
+                    .bind
+                    .int({ intValue: [validator] }),
+            );
+
+            write(expectedValue.toString());
+
+            expect(validator).toBeCalledWith({
+                // the visual value
+                value: expectedValue.toString(),
+                // the entity with the possible "proper value"
+                entity,
+                // selector for that property
+                selector,
+            });
+        });
+
+        it('should be called with the value, the entity and the selector', () => {
+            const { result } = renderHook(() => useSmolForm<TestEntity>());
+
+            const expectedValue = randomInt(255).toString();
+
+            const validator = () => expectedValue;
+
+            const bindInput = { strValue: { validators: [validator] } };
+
+            const write = curryChange(
+                result
+                    .current
+                    .bind(bindInput),
+            );
+
+            write('anything');
+
+            const errorFromState = result.current.errors.strValue[0];
+            const { helperText } = result.current.bind.int(bindInput);
+
+            expect(errorFromState).toBe(expectedValue);
+            expect(helperText).toStrictEqual([expectedValue]);
         });
     });
 });
