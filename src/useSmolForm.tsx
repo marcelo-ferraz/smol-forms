@@ -55,7 +55,7 @@ function useSmolForms<
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [validationErrors]);
 
-    const validate = useCallback(
+    const internalValidate = useCallback(
         (
             cfg: MoreGenericConfigForBind<Entity>,
             value: unknown,
@@ -158,7 +158,7 @@ function useSmolForms<
                     }
 
                     // try to apply any validations that were passed
-                    validate(
+                    internalValidate(
                         cfg,
                         nextState.display[selector],
                         nextState.value,
@@ -178,11 +178,11 @@ function useSmolForms<
             };
 
         return handler;
-    }, [validate]);
+    }, [internalValidate]);
 
     const entity = useMemo(() => {
         if (!lastEventRef.current || !changeCallback) { 
-            return entityState; 
+            return entityState;
         }
 
         const {
@@ -221,6 +221,20 @@ function useSmolForms<
         };
     }, [changeCallback, entityState]);
 
+    const exposedValidate = useCallback(() => {
+        if (lastEventRef.current) { return; }
+
+        const {
+            cfg,
+            event,
+            selector,
+        } = lastEventRef.current;
+
+        internalValidate(
+            cfg, event.target.value, entity.value, selector,
+        );
+    }, [entity?.value, internalValidate]);
+
     const bind = useMemo<Bind<Entity, FieldBoundProps>>(
         () => binderFactory(
             entityState,
@@ -237,7 +251,7 @@ function useSmolForms<
 
     return {
         bind,
-        // validate: () => validate()
+        validate: exposedValidate,
         emitFieldChange: fieldChangeHandler,
         entity: entity.value,
         errors: validationErrors,
