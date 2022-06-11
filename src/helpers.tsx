@@ -15,12 +15,13 @@ export function destructureCfg<T>(
         return [selector, cfg];
     }
 
-    const firstProperty = Object.entries(selector)[0];
+    const input = Object.entries(options);
 
-    if (firstProperty?.length < 1) {
-        throw new Error(`Invalid binding input: ${selector}`);
+    if (input.length !== 1) {
+        throw new Error(`Invalid binding input: ${JSON.stringify(options)}`);
     }
 
+    const [firstProperty] = input;
     selector = firstProperty[0] as keyof T;
     const unknownValue = firstProperty[1];
 
@@ -35,8 +36,8 @@ export function destructureCfg<T>(
             validators: unknownValue as Validator<T, typeof selector>,
         };
     // declarative config object
-    } else if (typeof options === 'object') {
-        cfg = firstProperty[1] as MoreGenericConfigForBind<T>;
+    } else if (typeof unknownValue === 'object') {
+        cfg = unknownValue as MoreGenericConfigForBind<T>;
     }
 
     return [

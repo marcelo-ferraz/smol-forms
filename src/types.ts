@@ -99,7 +99,7 @@ export type SmolInputChangeHandler<Entity> = MoreGenericConfigForBind<Entity>['p
     ) => void
 );
 
-export type SmolChangeCallback<Entity> = (args: {
+export type SmolChangeCallbackArgs<Entity> = {
     event: SmolChangeEvent;
     selector?: keyof Entity;
     cfg?: MoreGenericConfigForBind<Entity>;
@@ -107,7 +107,9 @@ export type SmolChangeCallback<Entity> = (args: {
     prevEntity: Partial<Entity>;
     entityDisplay: Partial<{ [key in keyof Entity]: unknown; }>;
     prevEntityDisplay: Partial<{ [key in keyof Entity]: unknown; }>;
-}) => void | DisplayNValue<Entity>;
+};
+
+export type SmolChangeCallback<Entity> = (args: SmolChangeCallbackArgs<Entity>) => void | DisplayNValue<Entity>;
 
 export type FormHookProps<
     Entity,

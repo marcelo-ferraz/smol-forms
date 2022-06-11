@@ -3,6 +3,7 @@ import {
     useState,
     useMemo,
     useEffect,
+    useRef,
 } from 'react';
 
 import binderFactory from './binderFactory';
@@ -18,10 +19,16 @@ import {
     MoreGenericConfigForBind,
     Bind,
     DisplayNValue,
+    SmolChangeCallbackArgs,
 } from './types';
 
 // I could just have the spread, but it wouldnt copy nested objs
 const oldSchoolDeepCopy = (obj: unknown) => JSON.parse(JSON.stringify(obj));
+
+type ChangeArgs<Entity> = Omit<
+    SmolChangeCallbackArgs<Entity>,
+    'entityDisplay' | 'entity'
+>;
 
 function useSmolForms<
     Entity,
@@ -33,11 +40,12 @@ function useSmolForms<
     onChange: changeCallback,
 }: Partial<FormHookProps<Entity, FieldBoundProps>> = {})
 : FormHookResult<Entity, FieldBoundProps> {
-    const [entity, setEntity] = useState<DisplayNValue<Entity>>({
+    const [entityState, setEntityState] = useState<DisplayNValue<Entity>>({
         value: oldSchoolDeepCopy(initial),
         display: oldSchoolDeepCopy(initial),
     });
     const [validationErrors, setValidationErrors] = useState<ValidationErrors<Entity>>({});
+    const lastEventRef = useRef<ChangeArgs<Entity>>(null);
 
     useEffect(() => {
         // only raise when the handler is passed and there are errors
@@ -109,9 +117,9 @@ function useSmolForms<
                         : target.value;
                 }
 
-                setEntity((prevState) => {
+                setEntityState((prevState) => {
                     // copy previous state for changing
-                    let nextState = oldSchoolDeepCopy(prevState);
+                    const nextState = oldSchoolDeepCopy(prevState);
 
                     // apply the value to the state,
                     // and unless the component treats it, turns it to string,
@@ -157,51 +165,71 @@ function useSmolForms<
                         selector,
                     );
 
-                    if (changeCallback) {
-                        // if the theres a change callback, we call it
-                        let callbackResult = changeCallback({
-                            cfg,
-                            event,
-                            selector,
-                            entity: nextState.value,
-                            prevEntity: prevState.value,
-                            entityDisplay: nextState.display,
-                            prevEntityDisplay: prevState.display,
-                        });
-
-                        // if the return is something
-                        if (!callbackResult) {
-                            callbackResult = callbackResult as DisplayNValue<Entity>;
-                            // that result can override the next state
-                            nextState = {
-                                display: {
-                                    ...nextState.display,
-                                    ...(callbackResult.display ?? {}),
-                                },
-                                value: {
-                                    ...nextState.value,
-                                    ...(callbackResult.value ?? {}),
-                                },
-                            };
-                        }
-                    }
+                    lastEventRef.current = {
+                        cfg,
+                        event,
+                        selector,
+                        prevEntity: prevState.value,
+                        prevEntityDisplay: prevState.display,
+                    };
 
                     return nextState;
                 });
             };
 
         return handler;
-    }, [changeCallback, validate]);
+    }, [validate]);
+
+    const entity = useMemo(() => {
+        if (!lastEventRef.current || !changeCallback) { 
+            return entityState; 
+        }
+
+        const {
+            cfg,
+            event,
+            selector,
+            prevEntity,
+            prevEntityDisplay,
+        } = lastEventRef.current;
+
+        // if the theres a change callback, we call it
+        let callbackResult = changeCallback({
+            cfg,
+            event,
+            selector,
+            entity: entityState.value,
+            prevEntity,
+            entityDisplay: entityState.display,
+            prevEntityDisplay,
+        });
+
+        if (!callbackResult) { return entityState; }
+
+        // if the return is something
+        callbackResult = callbackResult as DisplayNValue<Entity>;
+        // that result can override the next state
+        return {
+            display: {
+                ...entityState.display,
+                ...(callbackResult.display ?? {}),
+            },
+            value: {
+                ...entityState.value,
+                ...(callbackResult.value ?? {}),
+            },
+        };
+    }, [changeCallback, entityState]);
 
     const bind = useMemo<Bind<Entity, FieldBoundProps>>(
         () => binderFactory(
-            entity,
+            entityState,
             validationErrors,
             adapter,
             fieldChangeHandler,
         ), [
             adapter,
-            entity,
+            entityState,
             fieldChangeHandler,
             validationErrors,
         ],
@@ -209,6 +237,7 @@ function useSmolForms<
 
     return {
         bind,
+        // validate: () => validate()
         emitFieldChange: fieldChangeHandler,
         entity: entity.value,
         errors: validationErrors,
