@@ -1,4 +1,4 @@
-import defaultBindAdapter from './defaultBindAdapter';
+import defaultBindAdapter from './bindAdapters';
 
 import { destructureCfg } from './helpers';
 import { int, float } from './inputTypes';

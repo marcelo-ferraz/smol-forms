@@ -1,8 +1,8 @@
 import { act, renderHook } from '@testing-library/react-hooks';
 import { randomInt } from 'crypto';
 import useSmolForm from './useSmolForm';
-import { DefaultBindProps, FormHookResult } from './types';
-import { DEFAULT_VALUE } from './defaultBindAdapter';
+import { MuiBindProps, FormHookResult } from './types';
+import { DEFAULT_VALUE, muiAdapter } from './bindAdapters';
 import { TestEntity } from './test/helpers';
 // no need for now, as the debounce is off
 // import { DEFAULT_CHANGE_WAIT } from './defaultBindAdapter';
@@ -11,7 +11,7 @@ import { TestEntity } from './test/helpers';
 // jest.useFakeTimers();
 
 const curryChange = (
-    boundProps: DefaultBindProps<TestEntity>,
+    boundProps: MuiBindProps<TestEntity>,
 ) => (
     value: string,
 ) => act(
@@ -27,7 +27,7 @@ const curryChange = (
 const getDisplayNValue = (
     key: keyof TestEntity,
     { current }
-    : { current: FormHookResult<TestEntity, DefaultBindProps<TestEntity>>},
+    : { current: FormHookResult<TestEntity, MuiBindProps<TestEntity>>},
 ) => [
     current.bind(key).value,
     current.entity[key],
@@ -283,7 +283,9 @@ describe('hook: useSmolForm', () => {
             });
 
             it('should set the validators when binding the key with a function array', () => {
-                const { result } = renderHook(() => useSmolForm<TestEntity>());
+                const { result } = renderHook(() => useSmolForm<TestEntity>({
+                    adapter: muiAdapter
+                }));
 
                 const expectedError1 = randomInt(255).toString();
                 const expectedError2 = randomInt(255).toString();
@@ -365,7 +367,9 @@ describe('hook: useSmolForm', () => {
         });
 
         it('should be called with the value, the entity and the selector', () => {
-            const { result } = renderHook(() => useSmolForm<TestEntity>());
+            const { result } = renderHook(() => useSmolForm<TestEntity>({
+                adapter: muiAdapter,
+            }));
 
             const expectedValue = randomInt(255).toString();
 

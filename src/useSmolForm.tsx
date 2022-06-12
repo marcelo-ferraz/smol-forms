@@ -13,7 +13,7 @@ import {
     FormHookProps,
     FormHookResult,
     ValidationErrors,
-    DefaultBindProps,
+    MuiBindProps,
     MinimumToBind,
     SmolInputChangeHandler,
     MoreGenericConfigForBind,
@@ -32,7 +32,7 @@ type ChangeArgs<Entity> = Omit<
 
 function useSmolForms<
     Entity,
-    FieldBoundProps extends MinimumToBind<Entity> = DefaultBindProps<Entity>
+    FieldBoundProps extends MinimumToBind<Entity> = MuiBindProps<Entity>
 >({
     initial = {},
     onValidationError,

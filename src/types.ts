@@ -6,13 +6,10 @@ type OnlyOne<T> = keyof T extends infer K
     : never
     : never;
 
-export type DefaultBindProps<Entity> = {
-    onChange: SmolInputChangeHandler<Entity>;
+export type MuiBindProps<Entity> = MinimumToBind<Entity> & {
     error: boolean;
     name: string;
     helperText: string;
-    value: never;
-    'data-key': string | number | symbol;
 };
 
 export type Validator<
@@ -53,7 +50,7 @@ export type BindingInput<Entity> = keyof Entity
 
 export interface Bind<
     Entity,
-    FieldBoundProps extends MinimumToBind<Entity> = DefaultBindProps<Entity>
+    FieldBoundProps extends MinimumToBind<Entity> = MuiBindProps<Entity>
 > {
     (input: BindingInput<Entity>): FieldBoundProps;
     float(input: BindingInput<Entity>, args?: NumberArgs): FieldBoundProps;
@@ -64,6 +61,7 @@ export interface Bind<
 export type MinimumToBind<T> = {
     onChange: SmolInputChangeHandler<T>,
     'data-key': string | number | symbol,
+    value: any,
 };
 
 export type BindArgs<Entity> = {
@@ -75,12 +73,12 @@ export type BindArgs<Entity> = {
 }
 
 export type BindAdapterArgs<Entity> = BindArgs<Entity> & {
-    bind: () => DefaultBindProps<Entity>,
+    bind: () => MuiBindProps<Entity>,
 }
 
 export type BindAdapter<
     Entity,
-    FieldBoundProps extends MinimumToBind<Entity> = DefaultBindProps<Entity>
+    FieldBoundProps extends MinimumToBind<Entity> = MuiBindProps<Entity>
 > = (args: BindAdapterArgs<Entity>) => FieldBoundProps;
 
 export type SmolChangeEvent = {
@@ -113,7 +111,7 @@ export type SmolChangeCallback<Entity> = (args: SmolChangeCallbackArgs<Entity>) 
 
 export type FormHookProps<
     Entity,
-    FieldBoundProps extends MinimumToBind<Entity> = DefaultBindProps<Entity>
+    FieldBoundProps extends MinimumToBind<Entity> = MuiBindProps<Entity>
 > = {
     initial?: Partial<Entity>;
     onValidationError?: (errors: ValidationErrors<Entity>) => void;
@@ -123,7 +121,7 @@ export type FormHookProps<
 
 export type FormHookResult<
     Entity,
-    FieldBoundProps extends MinimumToBind<Entity> = DefaultBindProps<Entity>
+    FieldBoundProps extends MinimumToBind<Entity> = MuiBindProps<Entity>
 > = {
     bind: Bind<Entity, FieldBoundProps>;
     emitFieldChange: SmolInputChangeHandler<Entity>;
@@ -136,7 +134,7 @@ export type FormHookResult<
 
 export type FormAndFieldAsArg<
     Entity,
-    FieldBoundProps extends MinimumToBind<Entity> = DefaultBindProps<Entity>,
+    FieldBoundProps extends MinimumToBind<Entity> = MuiBindProps<Entity>,
 > = {
     entity: Partial<Entity>;
     errors: ValidationErrors<Entity>;
@@ -146,12 +144,12 @@ export type FormAndFieldAsArg<
 
 export type FormFromFunc<
     Entity,
-    FieldBoundProps extends MinimumToBind<Entity> = DefaultBindProps<Entity>
+    FieldBoundProps extends MinimumToBind<Entity> = MuiBindProps<Entity>
 > = (args: FormAndFieldAsArg<Entity, FieldBoundProps>) => ReactElement;
 
 export type FormFieldsFromFunc<
     Entity,
-    FieldBoundProps extends MinimumToBind<Entity> = DefaultBindProps<Entity>
+    FieldBoundProps extends MinimumToBind<Entity> = MuiBindProps<Entity>
 > = (args: FormAndFieldAsArg<Entity, FieldBoundProps>) => ReactElement[];
 
 export type Runnable<R = unknown, T = unknown> = (val: T) => R;
@@ -160,12 +158,12 @@ export type UnbeknownstValues<T> = { [Property in keyof T]: unknown };
 
 export type SmolFormRef<
     Entity,
-    FieldBoundProps extends MinimumToBind<Entity> = DefaultBindProps<Entity>
+    FieldBoundProps extends MinimumToBind<Entity> = MuiBindProps<Entity>
 > = FormHookResult<Entity, FieldBoundProps>;
 
 export type SmolFormProps<
     Entity,
-    FieldBoundProps extends MinimumToBind<Entity> = DefaultBindProps<Entity>
+    FieldBoundProps extends MinimumToBind<Entity> = MuiBindProps<Entity>
 > = FormHookProps<Entity, FieldBoundProps> & {
     form?: FormFromFunc<Entity, FieldBoundProps>;
     formFields?: FormFieldsFromFunc<Entity, FieldBoundProps>;
@@ -181,7 +179,7 @@ export type SmolFormProps<
 
 export type SmolFormFactoryProps<
     Entity,
-    FieldBoundProps extends MinimumToBind<Entity> = DefaultBindProps<Entity>,
+    FieldBoundProps extends MinimumToBind<Entity> = MuiBindProps<Entity>,
 > = {
     entity?: Partial<Entity>;
     errors?: ValidationErrors<Entity>;
