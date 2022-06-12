@@ -390,7 +390,7 @@ describe('hook: useSmolForm', () => {
     });
 
     describe('change callback', () => {
-        it('should all the hook callback when there is a change on the field', () => {
+        it('should call the callback once per change', () => {
             const handlerStub = jest.fn();
             const expectedSelector = 'strValue';
             const expectedInput = randomInt(255).toString();

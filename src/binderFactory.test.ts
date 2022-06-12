@@ -1,7 +1,7 @@
 import binderFactory from './binderFactory';
 import { generateChars, GenFlags, TestEntity } from './test/helpers';
 import {
-    BindAdapter, BindArgs, DefaultBindProps, DisplayNValue, MinimumToBind, MoreGenericConfigForBind, ValidationErrors,
+    BindAdapter, BindArgs, DefaultBindProps, DisplayNValue, ValidationErrors,
 } from './types';
 
 import defaultBindAdapter from './defaultBindAdapter';

@@ -11,7 +11,7 @@ export type DefaultBindProps<Entity> = {
     error: boolean;
     name: string;
     helperText: string;
-    value: unknown;
+    value: never;
     'data-key': string | number | symbol;
 };
 
@@ -85,7 +85,7 @@ export type BindAdapter<
 
 export type SmolChangeEvent = {
     target: {
-        value: unknown;
+        value: string | number | readonly string[] | unknown;
         type?: string;
         checked?: boolean;
     };

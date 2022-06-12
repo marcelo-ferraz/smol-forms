@@ -181,7 +181,7 @@ function useSmolForms<
     }, [internalValidate]);
 
     const entity = useMemo(() => {
-        if (!lastEventRef.current || !changeCallback) { 
+        if (!lastEventRef.current || !changeCallback) {
             return entityState;
         }
 
