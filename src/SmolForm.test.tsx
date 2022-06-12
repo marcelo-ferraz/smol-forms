@@ -1,5 +1,5 @@
 import React from 'react';
-import { fireEvent, render, screen } from '@testing-library/react';
+import { fireEvent, render } from '@testing-library/react';
 import { randomInt } from 'crypto';
 import SmolForm from './SmolForm';
 import { TestEntity } from './test/helpers';

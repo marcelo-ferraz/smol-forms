@@ -9,7 +9,7 @@ export const DEFAULT_VALUE = '';
 
 export const muiAdapter = <Entity>(args: BindArgs<Entity>) : MuiBindProps<Entity> => {
     const name = (args.selector ?? new Date()).toString();
-    
+
     const def = defaultAdapter(args);
 
     const errors = args.validationErrors[args.selector];
@@ -21,7 +21,6 @@ export const muiAdapter = <Entity>(args: BindArgs<Entity>) : MuiBindProps<Entity
         helperText: errors as string ?? '',
     };
 };
-
 
 const defaultAdapter = <Entity>({
     cfg,
@@ -48,14 +47,5 @@ const defaultAdapter = <Entity>({
         value,
     };
 };
-
-const nativeAdapter = <Entity>(args: BindArgs<Entity>) : MinimumToBind<Entity> => {
-    const name = (args.selector ?? new Date()).toString();
-    
-    const def = defaultAdapter(args);
-    const errors = args.validationErrors[args.selector];
-
-    
-}
 
 export default defaultAdapter;

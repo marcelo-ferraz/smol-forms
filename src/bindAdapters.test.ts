@@ -112,7 +112,7 @@ describe('defaultAdapter', () => {
             const expectedValue = testEnt.value[expectedSelector];
             const expectedHelperText = generateChars(4);
             const errors = { [expectedSelector]: expectedHelperText };
-    
+
             const props = muiAdapter<TestEntity>({
                 selector: expectedSelector,
                 cfg: null,
@@ -120,7 +120,7 @@ describe('defaultAdapter', () => {
                 fieldChangeHandler: onChangeSpy,
                 validationErrors: errors,
             });
-    
+
             expect(props).toStrictEqual({
                 name: expectedSelector,
                 'data-key': expectedSelector,

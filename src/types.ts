@@ -61,7 +61,7 @@ export interface Bind<
 export type MinimumToBind<T> = {
     onChange: SmolInputChangeHandler<T>,
     'data-key': string | number | symbol,
-    value: any,
+    value: never,
 };
 
 export type BindArgs<Entity> = {

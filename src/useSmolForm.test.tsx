@@ -284,7 +284,7 @@ describe('hook: useSmolForm', () => {
 
             it('should set the validators when binding the key with a function array', () => {
                 const { result } = renderHook(() => useSmolForm<TestEntity>({
-                    adapter: muiAdapter
+                    adapter: muiAdapter,
                 }));
 
                 const expectedError1 = randomInt(255).toString();
