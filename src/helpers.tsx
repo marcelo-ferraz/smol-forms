@@ -1,3 +1,4 @@
+import { useEffect, useRef, useState } from 'react';
 import {
     BindingInput,
     MoreGenericConfigForBind,
@@ -54,4 +55,20 @@ export function runOrReduce<R, T = unknown>(actions: Runnable<R, T> | Runnable<R
         : [(actions as Runnable<R, T>)(value)];
 
     return result.filter((res) => res);
+}
+
+export function useDebounce<T>(value: T, delay = 300): T {
+    const [debouncedValue, setDebouncedValue] = useState(value);
+
+    useEffect(() => {
+        const handler = setTimeout(() => {
+            setDebouncedValue(value);
+        }, delay);
+
+        return () => {
+            clearTimeout(handler);
+        };
+    }, [value, delay]);
+
+    return debouncedValue;
 }

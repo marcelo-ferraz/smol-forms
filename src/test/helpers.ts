@@ -1,4 +1,5 @@
 /* eslint-disable no-bitwise */
+import { FireObject, fireEvent } from '@testing-library/react';
 import { act } from 'react-dom/test-utils';
 import { FormHookResult, MuiBindProps } from 'src/types';
 
@@ -63,8 +64,22 @@ export const curryChange = (
         boundProps.onChange({
             target: { value },
         });
+        jest.advanceTimersByTime(500);
+        jest.runAllTimers();
         // no need for now, as the debounce is off
         // jest.advanceTimersByTime(DEFAULT_CHANGE_WAIT);
+    },
+);
+
+export const fireChange = (
+    element: Parameters<FireObject['change']>[0],
+    options: Parameters<FireObject['change']>[1],
+) => act(
+    () => {
+        fireEvent.change(element, options);
+
+        jest.advanceTimersByTime(500);
+        jest.runAllTimers();
     },
 );
 
@@ -76,3 +91,17 @@ export const getDisplayNValue = (
     current.bind(key).value,
     current.entity[key],
 ];
+
+export const getDebouncedDisplayNValue = (
+    key: keyof TestEntity,
+    { current }
+    : { current: FormHookResult<TestEntity, MuiBindProps<TestEntity>>},
+) => {
+    jest.runAllTimers();
+    jest.advanceTimersByTime(500);
+
+    return [
+        current.bind(key).value,
+        current.entity[key],
+    ];
+};

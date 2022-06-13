@@ -17,6 +17,7 @@ function SmolFormInner<
     onChange,
     adapter,
     onValidationError,
+    delay,
     top,
     bottom,
     elements,
@@ -28,11 +29,13 @@ ref: ForwardedRef<SmolFormRef<Entity, R>>): ReactElement {
         bind,
         setErrors,
         emitFieldChange,
+        validate,
     } = useSmolForms<Entity, R>({
         initial,
         onChange,
         onValidationError,
         adapter,
+        delay,
     });
 
     useImperativeHandle(ref, () => ({
@@ -41,13 +44,8 @@ ref: ForwardedRef<SmolFormRef<Entity, R>>): ReactElement {
         errors,
         setErrors,
         emitFieldChange,
-    }), [
-        bind,
-        entity,
-        errors,
-        setErrors,
-        emitFieldChange,
-    ]);
+        validate,
+    }), [bind, entity, errors, setErrors, emitFieldChange, validate]);
 
     return (
         <SmolFormFactory<Entity, R>

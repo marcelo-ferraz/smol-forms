@@ -1,8 +1,10 @@
 import React from 'react';
-import { fireEvent, render } from '@testing-library/react';
+import { render } from '@testing-library/react';
 import { randomInt } from 'crypto';
 import SmolForm from './SmolForm';
-import { TestEntity } from './test/helpers';
+import { fireChange, TestEntity } from './test/helpers';
+
+jest.useFakeTimers();
 
 describe('<SmollForm />', () => {
     describe('onChange', () => {
@@ -30,7 +32,7 @@ describe('<SmollForm />', () => {
                 />,
             );
 
-            fireEvent.change(
+            fireChange(
                 form.getByTestId(expectedSelector), {
                     target: { value: expectedInput },
                 },

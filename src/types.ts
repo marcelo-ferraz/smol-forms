@@ -127,6 +127,7 @@ export type FormHookProps<
     onValidationError?: (errors: ValidationErrors<Entity>) => void;
     adapter?: BindAdapter<Entity, FieldBoundProps>;
     onChange?: SmolChangeCallback<Entity>;
+    delay?: number;
 }
 
 export type FormHookResult<

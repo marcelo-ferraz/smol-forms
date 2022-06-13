@@ -7,7 +7,7 @@ import { curryChange, getDisplayNValue, TestEntity } from './test/helpers';
 // import { DEFAULT_CHANGE_WAIT } from './defaultBindAdapter';
 
 // no need for now, as the debounce is off
-// jest.useFakeTimers();
+jest.useFakeTimers();
 
 describe('hook: useSmolForm', () => {
     describe('bind', () => {
@@ -15,13 +15,12 @@ describe('hook: useSmolForm', () => {
             it('should properly accept the entry 1.001', () => {
                 const args = {};
                 const { result } = renderHook(() => useSmolForm<TestEntity>(args));
-                const { bind /* , emitFieldChange */ } = result.current;
+                const { bind } = result.current;
 
                 const boundProps = bind.float('floatValue');
 
                 const write = curryChange(boundProps);
 
-                // emitFieldChange({ target: { value: '1' } }, 'floatValue', { type: (v) => float(v) });
                 write('1');
                 const one = getDisplayNValue('floatValue', result);
                 write('1.');
@@ -243,19 +242,18 @@ describe('hook: useSmolForm', () => {
             it('should set a parser when binding the key with a function', () => {
                 const { result } = renderHook(() => useSmolForm<TestEntity>());
 
-                const expectedValue = { target: { value: '0' } };
+                const expectedEvent = { target: { value: '0' } };
                 const bindInput = { strValue: (e: unknown) => e };
 
-                const { onChange } = result
-                    .current.bind(bindInput);
+                const write = curryChange(
+                    result.current.bind(bindInput),
+                );
 
-                act(() => {
-                    onChange(expectedValue);
-                });
+                write(expectedEvent.target.value);
 
                 const complexEntry = result.current.entity.strValue;
 
-                expect(complexEntry).toBe(expectedValue);
+                expect(complexEntry).toStrictEqual(expectedEvent);
             });
 
             it('should set the validators when binding the key with a function array', () => {

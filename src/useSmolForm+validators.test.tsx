@@ -11,6 +11,8 @@ import {
     DEFAULT_EMAIL_MSG, DEFAULT_FLOAT_MSG, DEFAULT_GENERIC_MSG, DEFAULT_INT_MSG, DEFAULT_REQUIRED_MSG, isEmail, isFloat, isInt, isRequired, pattern, regexes,
 } from './validators';
 
+jest.useFakeTimers();
+
 type TestArgs = {
     value?: string;
     selector?: keyof TestEntity;
@@ -32,6 +34,8 @@ describe('integration: useSmolForm hook + validators', () => {
             );
 
             write(value);
+            jest.runAllTimers();
+            jest.advanceTimersByTime(500);
 
             const error = result.current.errors[selector];
 
@@ -143,6 +147,7 @@ describe('integration: useSmolForm hook + validators', () => {
         for (let i = 0; i < randomInt(10); i += 1) {
             write(expectedValue);
         }
+        jest.runAllTimers();
 
         const error = result.current.errors[selector];
 

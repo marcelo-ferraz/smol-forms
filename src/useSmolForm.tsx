@@ -8,7 +8,7 @@ import {
 
 import binderFactory from './binderFactory';
 
-import { runOrReduce } from './helpers';
+import { runOrReduce, useDebounce } from './helpers';
 import {
     FormHookProps,
     FormHookResult,
@@ -37,12 +37,15 @@ function useSmolForms<
     onValidationError,
     adapter,
     onChange: changeCallback,
+    delay = 300,
 }: Partial<FormHookProps<Entity, FieldBoundProps>> = {})
 : FormHookResult<Entity, FieldBoundProps> {
     const [entityState, setEntityState] = useState<DisplayNValue<Entity>>({
         value: oldSchoolDeepCopy(initial),
         display: oldSchoolDeepCopy(initial),
     });
+    const debouncedEntity = useDebounce(entityState, delay);
+
     const [validationErrors, setValidationErrors] = useState<ValidationErrors<Entity>>({});
     const lastEventRef = useRef<ChangeArgs<Entity>>(null);
 
@@ -132,7 +135,7 @@ function useSmolForms<
 
     const entity = useMemo(() => {
         if (!lastEventRef.current || !changeCallback) {
-            return entityState;
+            return debouncedEntity;
         }
 
         const {
@@ -148,28 +151,28 @@ function useSmolForms<
             cfg,
             event,
             selector,
-            entity: entityState.value,
+            entity: debouncedEntity.value,
             prevEntity,
-            entityDisplay: entityState.display,
+            entityDisplay: debouncedEntity.display,
             prevEntityDisplay,
         });
 
-        if (!callbackResult) { return entityState; }
+        if (!callbackResult) { return debouncedEntity; }
 
         // if the return is something
         callbackResult = callbackResult as DisplayNValue<Entity>;
         // that result can override the next state
         return {
             display: {
-                ...entityState.display,
+                ...debouncedEntity.display,
                 ...(callbackResult.display ?? {}),
             },
             value: {
-                ...entityState.value,
+                ...debouncedEntity.value,
                 ...(callbackResult.value ?? {}),
             },
         };
-    }, [changeCallback, entityState]);
+    }, [changeCallback, debouncedEntity]);
 
     const validate = useCallback(
         () => {
