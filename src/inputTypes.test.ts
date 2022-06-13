@@ -1,4 +1,4 @@
-import { generateChars, GenFlags } from './test/helpers';
+import { generateChars, generateFloat, generateInt, GenFlags } from './test/helpers';
 import { int, float } from './inputTypes';
 
 describe('inputTypes', () => {
@@ -41,32 +41,32 @@ describe('inputTypes', () => {
             expect(result).toStrictEqual([input, inputAsNum]);
         });
         it('must be more than the minimum', () => {
-            const input = generateChars(4, GenFlags.numbers);
-            const inputAsNum = Number.parseInt(input, 10);
+            const inputAsNum = generateInt(4);
+            const input = inputAsNum.toString();
             const min = inputAsNum - 1;
             const result = int(input, { min });
 
             expect(result).toStrictEqual([input, inputAsNum]);
         });
         it('must be less than the maximum', () => {
-            const input = generateChars(4, GenFlags.numbers);
-            const inputAsNum = Number.parseInt(input, 10);
+            const inputAsNum = generateInt(4);
+            const input = inputAsNum.toString();
             const max = inputAsNum + 1;
             const result = int(input, { max });
 
             expect(result).toStrictEqual([input, inputAsNum]);
         });
         it('must not be more than the minimum', () => {
-            const input = generateChars(4, GenFlags.numbers);
-            const inputAsNum = Number.parseInt(input, 10);
+            const inputAsNum = generateInt(4);
+            const input = inputAsNum.toString();
             const min = inputAsNum + 1;
             const result = int(input, { min });
 
             expect(result).toStrictEqual(null);
         });
         it('must not be less than the maximum', () => {
-            const input = generateChars(4, GenFlags.numbers);
-            const inputAsNum = Number.parseInt(input, 10);
+            const inputAsNum = generateInt(4);
+            const input = inputAsNum.toString();
             const max = inputAsNum - 1;
             const result = int(input, { max });
 
@@ -75,8 +75,6 @@ describe('inputTypes', () => {
     });
 
     describe('float', () => {
-        const generateFloat = () => `${generateChars(4, GenFlags.numbers)}.${generateChars(2, GenFlags.numbers)}`;
-
         it('not accept letters', () => {
             const input = generateChars(4, GenFlags.lowerCaseLetters);
             const result = float(input);
@@ -84,39 +82,39 @@ describe('inputTypes', () => {
             expect(result).toBe(null);
         });
         it('accept numbers', () => {
-            const input = generateFloat();
-            const inputAsNum = Number.parseFloat(input);
+            const inputAsNum = generateFloat();
+            const input = inputAsNum.toString();
             const result = float(input);
 
             expect(result).toStrictEqual([input, inputAsNum]);
         });
         it('must be more than the minimum', () => {
-            const input = generateFloat();
-            const inputAsNum = Number.parseFloat(input);
+            const inputAsNum = generateFloat();
+            const input = inputAsNum.toString();
             const min = inputAsNum - 2;
             const result = float(input, { min });
 
             expect(result).toStrictEqual([input, inputAsNum]);
         });
         it('must be less than the maximum', () => {
-            const input = generateFloat();
-            const inputAsNum = Number.parseFloat(input);
+            const inputAsNum = generateFloat();
+            const input = inputAsNum.toString();
             const max = inputAsNum + 2;
             const result = float(input, { max });
 
             expect(result).toStrictEqual([input, inputAsNum]);
         });
         it('must not be more than the minimum', () => {
-            const input = generateFloat();
-            const inputAsNum = Number.parseFloat(input);
+            const inputAsNum = generateFloat();
+            const input = inputAsNum.toString();
             const min = inputAsNum + 1;
             const result = float(input, { min });
 
             expect(result).toStrictEqual(null);
         });
         it('must not be less than the maximum', () => {
-            const input = generateFloat();
-            const inputAsNum = Number.parseFloat(input);
+            const inputAsNum = generateFloat();
+            const input = inputAsNum.toString();
             const max = inputAsNum - 1;
             const result = float(input, { max });
 

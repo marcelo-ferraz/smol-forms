@@ -30,14 +30,24 @@ export type BindingOptionsObj<Entity> = OnlyOne<{
     }
 }>;
 
+export type ValidateFuncArgs<Entity = unknown> = Partial<{
+    selector: keyof Entity,
+    value: unknown,
+    entity: Entity,
+}>;
+
+export type ValidateFunc<Entity = unknown> = Runnable<
+    string,
+    ValidateFuncArgs<Entity>
+>
+
 export type MoreGenericConfigForBind<Entity> = {
     mask?: string;
     changeWait?: number;
     defaultValue?: unknown;
     parser?: Runnable;
     type?: (value: unknown, key: keyof Entity, entity: Partial<Entity>) => [unknown, unknown];
-    validators?: Runnable<string, Partial<{ selector: keyof Entity, value: unknown, entity: Entity }>>
-        | Runnable<string, Partial<{ selector: keyof Entity, value: unknown, entity: Entity }>>[];
+    validators?: ValidateFunc<Entity> | ValidateFunc<Entity>[];
 };
 
 export type BindingInput<Entity> = keyof Entity

@@ -55,47 +55,6 @@ function useSmolForms<
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [validationErrors]);
 
-    const internalValidate = useCallback(
-        (
-            cfg: MoreGenericConfigForBind<Entity>,
-            value: unknown,
-            ent: Partial<Entity>,
-            selector: keyof Entity,
-        ) => {
-            const errors = runOrReduce<string>(
-                cfg?.validators, {
-                    // the visual value
-                    value,
-                    // the entity with the possible "proper value"
-                    entity: ent,
-                    // selector for that property
-                    selector,
-                },
-            );
-
-            // if there are errors, set them
-            if (errors.length) {
-                setValidationErrors((prevErrors) => ({
-                    ...prevErrors,
-                    [selector]: [
-                        ...prevErrors[selector] ?? [],
-                        ...errors,
-                    ],
-                }));
-            } else {
-            // else, clear them
-                setValidationErrors((prevErrors) => {
-                    const nextErrors = { ...prevErrors };
-                    if (selector in nextErrors) {
-                        delete nextErrors[selector];
-                    }
-                    return nextErrors;
-                });
-            }
-        },
-        [],
-    );
-
     const fieldChangeHandler = useMemo(() => {
         const handler
             : SmolInputChangeHandler<Entity> = (
@@ -157,14 +116,6 @@ function useSmolForms<
                         );
                     }
 
-                    // try to apply any validations that were passed
-                    internalValidate(
-                        cfg,
-                        nextState.display[selector],
-                        nextState.value,
-                        selector,
-                    );
-
                     lastEventRef.current = {
                         cfg,
                         event,
@@ -178,7 +129,7 @@ function useSmolForms<
             };
 
         return handler;
-    }, [internalValidate]);
+    }, []);
 
     const entity = useMemo(() => {
         if (!lastEventRef.current || !changeCallback) {
@@ -221,19 +172,60 @@ function useSmolForms<
         };
     }, [changeCallback, entityState]);
 
-    const exposedValidate = useCallback(() => {
-        if (lastEventRef.current) { return; }
+    const validate = useCallback(
+        () => {
+            if (!lastEventRef.current) { return; }
 
-        const {
-            cfg,
-            event,
-            selector,
-        } = lastEventRef.current;
+            const {
+                cfg,
+                event,
+                selector,
+            } = lastEventRef.current;
 
-        internalValidate(
-            cfg, event.target.value, entity.value, selector,
-        );
-    }, [entity?.value, internalValidate]);
+            const { value } = event.target;
+
+            const errors = runOrReduce<string>(
+                cfg?.validators, {
+                    // the visual value
+                    value,
+                    // the entity with the possible "proper value"
+                    entity,
+                    // selector for that property
+                    selector,
+                },
+            );
+
+            // if there are errors, set them
+            if (errors.length) {
+                setValidationErrors(
+                    (prevErrors) => ({
+                        ...prevErrors,
+                        [selector]: [
+                            ...prevErrors[selector] ?? [],
+                            ...errors,
+                        ],
+                    }),
+                );
+            } else {
+                // else, clear them
+                setValidationErrors(
+                    (prevErrors) => {
+                        const nextErrors = { ...prevErrors };
+                        if (selector in nextErrors) {
+                            delete nextErrors[selector];
+                        }
+                        return nextErrors;
+                    },
+                );
+            }
+        },
+        [entity],
+    );
+
+    useEffect(() => {
+        // try to apply any validations that were passed
+        validate();
+    }, [validate]);
 
     const bind = useMemo<Bind<Entity, FieldBoundProps>>(
         () => binderFactory(
@@ -251,7 +243,7 @@ function useSmolForms<
 
     return {
         bind,
-        validate: exposedValidate,
+        validate,
         emitFieldChange: fieldChangeHandler,
         entity: entity.value,
         errors: validationErrors,

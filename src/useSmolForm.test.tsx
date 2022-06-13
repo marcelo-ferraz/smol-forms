@@ -3,35 +3,12 @@ import { randomInt } from 'crypto';
 import useSmolForm from './useSmolForm';
 import { MuiBindProps, FormHookResult } from './types';
 import { DEFAULT_VALUE, muiAdapter } from './bindAdapters';
-import { TestEntity } from './test/helpers';
+import { curryChange, getDisplayNValue, TestEntity } from './test/helpers';
 // no need for now, as the debounce is off
 // import { DEFAULT_CHANGE_WAIT } from './defaultBindAdapter';
 
 // no need for now, as the debounce is off
 // jest.useFakeTimers();
-
-const curryChange = (
-    boundProps: MuiBindProps<TestEntity>,
-) => (
-    value: string,
-) => act(
-    () => {
-        boundProps.onChange({
-            target: { value },
-        });
-        // no need for now, as the debounce is off
-        // jest.advanceTimersByTime(DEFAULT_CHANGE_WAIT);
-    },
-);
-
-const getDisplayNValue = (
-    key: keyof TestEntity,
-    { current }
-    : { current: FormHookResult<TestEntity, MuiBindProps<TestEntity>>},
-) => [
-    current.bind(key).value,
-    current.entity[key],
-];
 
 describe('hook: useSmolForm', () => {
     describe('bind', () => {
@@ -343,7 +320,10 @@ describe('hook: useSmolForm', () => {
 
             const expectedValue = randomInt(255);
             const selector = 'intValue';
-            const entity = { [selector]: expectedValue };
+            const entity = {
+                value: { [selector]: expectedValue },
+                display: { [selector]: expectedValue.toString() },
+            };
 
             const validator = jest.fn();
 

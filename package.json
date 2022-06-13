@@ -1,6 +1,6 @@
 {
   "name": "smol-forms",
-  "version": "0.0.2-nightly.33",
+  "version": "0.0.2-nightly.34",
   "description": "A small framework for forms in react",
   "main": "index.js",
   "scripts": {
@@ -27,6 +27,7 @@
     "@types/debounce": "^1.2.1",
     "@types/eslint": "^8.2.1",
     "@types/jest": "^27.0.2",
+    "@types/jest-in-case": "^1.0.5",
     "@types/lodash.debounce": "^4.0.7",
     "@types/node": "^16.10.9",
     "@types/react": "^17.0.29",

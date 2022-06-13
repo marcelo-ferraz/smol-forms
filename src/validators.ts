@@ -1,3 +1,5 @@
+import { ValidateFunc, ValidateFuncArgs } from './types';
+
 export const regexes = {
     // RFC 5322
     // eslint-disable-next-line no-control-regex
@@ -6,35 +8,51 @@ export const regexes = {
     isFloat: (decimal: number) => new RegExp(`^\\d*\\.?\\d{0,${decimal}}$`),
 };
 
+export const DEFAULT_REQUIRED_MSG = 'This field is required';
+export const DEFAULT_INT_MSG = 'This field should be a number';
+export const DEFAULT_FLOAT_MSG = 'This field should be a decimal';
+export const DEFAULT_GENERIC_MSG = 'This field is incorrect';
+export const DEFAULT_EMAIL_MSG = 'This field is an email';
+
 export const isRequired = (
-    val: unknown,
-    msg = 'This field is required',
-) => (!val?.toString().trim() ? msg : null);
+    { value }: ValidateFuncArgs,
+    msg = DEFAULT_REQUIRED_MSG,
+) => (!value?.toString().trim() ? msg : null);
 
 export const isInt = (
-    val: unknown,
-    msg = 'This field is number',
-) => (regexes.isInt.test(val?.toString().trim() ?? '') ? msg : null);
+    { value }: ValidateFuncArgs,
+    msg = DEFAULT_INT_MSG,
+) => (
+    !regexes.isInt.test(
+        value?.toString().trim() ?? '',
+    ) ? msg : null
+);
 
 export const isFloat = (decimal = 2) => (
-    { toString }: unknown = '',
-    msg = 'This field is number',
-) => (regexes.isFloat(decimal).test(
-    toString().trim() ?? '',
-) ? msg : null);
+    { value }: ValidateFuncArgs,
+    msg = DEFAULT_FLOAT_MSG,
+) => (
+    !regexes.isFloat(decimal).test(
+        value?.toString().trim() ?? '',
+    ) ? msg : null
+);
 
 export const pattern = (
     regex: RegExp,
 ) => (
-    { toString }: unknown = '',
-    msg = 'This field is incorrect',
-) => (new RegExp(regex).test(
-    toString().trim() ?? '',
-) ? msg : null);
+    { value }: ValidateFuncArgs,
+    msg = DEFAULT_GENERIC_MSG,
+) => (
+    !new RegExp(regex).test(
+        value?.toString().trim() ?? '',
+    ) ? msg : null
+);
 
 export const isEmail = (
-    val: unknown,
-    msg = 'This field is an email',
-) => (new RegExp(regexes.isEmail).test(
-    val?.toString().trim() ?? '',
-) ? msg : null);
+    { value }: ValidateFuncArgs,
+    msg = DEFAULT_EMAIL_MSG,
+) => (
+    !regexes.isEmail.test(
+        value?.toString().trim() ?? '',
+    ) ? msg : null
+);
