@@ -16,7 +16,6 @@ import {
     MuiBindProps,
     MinimumToBind,
     SmolInputChangeHandler,
-    MoreGenericConfigForBind,
     Bind,
     DisplayNValue,
     SmolChangeCallbackArgs,

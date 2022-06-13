@@ -1,4 +1,6 @@
-import { generateChars, generateFloat, generateInt, GenFlags } from './test/helpers';
+import {
+    generateChars, generateFloat, generateInt, GenFlags,
+} from './test/helpers';
 import { int, float } from './inputTypes';
 
 describe('inputTypes', () => {

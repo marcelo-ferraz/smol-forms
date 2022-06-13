@@ -1,7 +1,6 @@
 import { act, renderHook } from '@testing-library/react-hooks';
 import { randomInt } from 'crypto';
 import useSmolForm from './useSmolForm';
-import { MuiBindProps, FormHookResult } from './types';
 import { DEFAULT_VALUE, muiAdapter } from './bindAdapters';
 import { curryChange, getDisplayNValue, TestEntity } from './test/helpers';
 // no need for now, as the debounce is off

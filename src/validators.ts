@@ -1,4 +1,4 @@
-import { ValidateFunc, ValidateFuncArgs } from './types';
+import { ValidateFuncArgs } from './types';
 
 export const regexes = {
     // RFC 5322
