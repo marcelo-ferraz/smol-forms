@@ -14,7 +14,7 @@ import {
 type TestArgs = {
     value?: string;
     selector?: keyof TestEntity;
-    validator: ValidateFunc;
+    validator: ValidateFunc | ValidateFunc[];
     msg?: string;
 };
 
@@ -95,53 +95,83 @@ describe('integration: useSmolForm hook + validators', () => {
         },
     );
 
-    describe('isRequired', () => {
-        it('should be return the default error message if the value is empty', () => {
-            const { result } = renderHook(() => useSmolForm<TestEntity>());
+    it('should have only one error message even if write invalid values multiple times', () => {
+        const { result } = renderHook(() => useSmolForm<TestEntity>());
 
-            const expectedValue = ' ';
-            const selector = 'strValue';
-            const expectedError = [DEFAULT_REQUIRED_MSG];
+        const expectedValue = ' ';
+        const selector = 'strValue';
+        const expectedError = [DEFAULT_REQUIRED_MSG];
 
-            const validator = isRequired;
+        const validator = isRequired;
 
-            const write = curryChange(
-                result
-                    .current
-                    .bind({ [selector]: [validator] }),
-            );
+        const write = curryChange(
+            result
+                .current
+                .bind({ [selector]: [validator] }),
+        );
 
+        for (let i = 0; i < randomInt(10); i += 1) {
             write(expectedValue);
+        }
 
-            const error = result.current.errors[selector];
+        const error = result.current.errors[selector];
 
-            expect(error).toStrictEqual(expectedError);
-        });
+        expect(error).toStrictEqual(expectedError);
+    });
 
-        it('should be called with the value, the entity and the selector', () => {
-            const { result } = renderHook(() => useSmolForm<TestEntity>({
-                adapter: muiAdapter,
-            }));
+    it('should have only one error message per validator even if write invalid values multiple times', () => {
+        const { result } = renderHook(() => useSmolForm<TestEntity>());
 
-            const expectedValue = randomInt(255).toString();
+        const expectedValue = generateChars(10);
+        const selector = 'strValue';
+        const expectedError = [
+            DEFAULT_FLOAT_MSG,
+            DEFAULT_INT_MSG,
+        ];
 
-            const validator = () => expectedValue;
+        const validators = [
+            isFloat(2),
+            isInt,
+        ];
 
-            const bindInput = { strValue: { validators: [validator] } };
+        const write = curryChange(
+            result
+                .current
+                .bind({ [selector]: validators }),
+        );
 
-            const write = curryChange(
-                result
-                    .current
-                    .bind(bindInput),
-            );
+        for (let i = 0; i < randomInt(10); i += 1) {
+            write(expectedValue);
+        }
 
-            write('anything');
+        const error = result.current.errors[selector];
 
-            const errorFromState = result.current.errors.strValue[0];
-            const { helperText } = result.current.bind.int(bindInput);
+        expect(error).toStrictEqual(expectedError);
+    });
 
-            expect(errorFromState).toBe(expectedValue);
-            expect(helperText).toStrictEqual([expectedValue]);
-        });
+    it('should be called with the value, the entity and the selector', () => {
+        const { result } = renderHook(() => useSmolForm<TestEntity>({
+            adapter: muiAdapter,
+        }));
+
+        const expectedValue = randomInt(255).toString();
+
+        const validator = () => expectedValue;
+
+        const bindInput = { strValue: { validators: [validator] } };
+
+        const write = curryChange(
+            result
+                .current
+                .bind(bindInput),
+        );
+
+        write('anything');
+
+        const errorFromState = result.current.errors.strValue[0];
+        const { helperText } = result.current.bind.int(bindInput);
+
+        expect(errorFromState).toBe(expectedValue);
+        expect(helperText).toStrictEqual([expectedValue]);
     });
 });
