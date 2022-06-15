@@ -121,6 +121,7 @@ function useSmolForms<
                     lastEventRef.current = {
                         cfg,
                         event,
+                        value,
                         selector,
                         prevEntity: prevState.value,
                         prevEntityDisplay: prevState.display,
@@ -141,6 +142,7 @@ function useSmolForms<
         const {
             cfg,
             event,
+            value,
             selector,
             prevEntity,
             prevEntityDisplay,
@@ -150,6 +152,7 @@ function useSmolForms<
         let callbackResult = changeCallback({
             cfg,
             event,
+            value,
             selector,
             entity: debouncedEntity.value,
             prevEntity,
@@ -180,11 +183,9 @@ function useSmolForms<
 
             const {
                 cfg,
-                event,
+                value,
                 selector,
             } = lastEventRef.current;
-
-            const { value } = event.target;
 
             const errors = runOrReduce<string>(
                 cfg?.validators, {

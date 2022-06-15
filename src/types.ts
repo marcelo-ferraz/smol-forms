@@ -109,6 +109,7 @@ export type SmolInputChangeHandler<Entity> = MoreGenericConfigForBind<Entity>['p
 
 export type SmolChangeCallbackArgs<Entity> = {
     event: SmolChangeEvent;
+    value: unknown;
     selector?: keyof Entity;
     cfg?: MoreGenericConfigForBind<Entity>;
     entity: Partial<Entity>;

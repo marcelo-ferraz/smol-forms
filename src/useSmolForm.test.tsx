@@ -395,6 +395,7 @@ describe('hook: useSmolForm', () => {
             expect(handlerStub).toBeCalledWith({
                 event: expect.anything(),
                 cfg: null,
+                value: expectedInput,
                 entityDisplay: expectedDisplay,
                 prevEntityDisplay: expect.anything(),
                 entity: expectedEntity,
