@@ -19,6 +19,7 @@ import {
     Bind,
     DisplayNValue,
     SmolChangeCallbackArgs,
+    MoreGenericConfigForBind,
 } from './types';
 
 // I could just have the spread, but it wouldnt copy nested objs
@@ -28,6 +29,8 @@ type ChangeArgs<Entity> = Omit<
     SmolChangeCallbackArgs<Entity>,
     'entityDisplay' | 'entity'
 >;
+
+type BoundFields<Entity> = { [key in keyof Entity]?: MoreGenericConfigForBind<Entity> }
 
 function useSmolForms<
     Entity,
@@ -40,6 +43,8 @@ function useSmolForms<
     delay = 300,
 }: Partial<FormHookProps<Entity, FieldBoundProps>> = {})
 : FormHookResult<Entity, FieldBoundProps> {
+    const boundFields = useRef<BoundFields<Entity>>({});
+
     const [entityState, setEntityState] = useState<DisplayNValue<Entity>>({
         value: oldSchoolDeepCopy(initial),
         display: oldSchoolDeepCopy(initial),
@@ -179,7 +184,7 @@ function useSmolForms<
 
     const validate = useCallback(
         () => {
-            if (!lastEventRef.current) { return; }
+            if (!lastEventRef.current) { return null; }
 
             const {
                 cfg,
@@ -220,6 +225,8 @@ function useSmolForms<
                     },
                 );
             }
+
+            return !errors.length;
         },
         [entity],
     );

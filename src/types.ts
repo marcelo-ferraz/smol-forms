@@ -88,7 +88,7 @@ export type BindAdapterArgs<Entity> = BindArgs<Entity> & {
 
 export type BindAdapter<
     Entity,
-    FieldBoundProps extends MinimumToBind<Entity> = MuiBindProps<Entity>
+    FieldBoundProps extends MinimumToBind<Entity> = MinimumToBind<Entity>
 > = (args: BindAdapterArgs<Entity>) => FieldBoundProps;
 
 export type SmolChangeEvent = {
@@ -106,6 +106,10 @@ export type SmolInputChangeHandler<Entity> = MoreGenericConfigForBind<Entity>['p
         cfg?: MoreGenericConfigForBind<Entity>,
     ) => void
 );
+
+export type OnBindingCallback<Entity> = (
+    selector: keyof Entity, config: MoreGenericConfigForBind<Entity>
+) => void
 
 export type SmolChangeCallbackArgs<Entity> = {
     event: SmolChangeEvent;
