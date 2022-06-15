@@ -14,7 +14,7 @@ import {
     FormHookResult,
     ValidationErrors,
     MuiBindProps,
-    MinimumToBind,
+    MinPropsToBind,
     SmolInputChangeHandler,
     Bind,
     DisplayNValue,
@@ -31,7 +31,7 @@ type ChangeArgs<Entity> = Omit<
 
 function useSmolForms<
     Entity,
-    FieldBoundProps extends MinimumToBind<Entity> = MuiBindProps<Entity>
+    FieldBoundProps extends MinPropsToBind<Entity> = MuiBindProps<Entity>
 >({
     initial = {},
     onValidationError,
