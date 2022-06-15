@@ -118,6 +118,8 @@ describe('integration: useSmolForm hook + validators', () => {
             write(expectedValue);
         }
 
+        jest.runAllTimers();
+
         const error = result.current.errors[selector];
 
         expect(error).toStrictEqual(expectedError);

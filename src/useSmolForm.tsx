@@ -14,7 +14,7 @@ import {
     FormHookResult,
     ValidationErrors,
     MuiBindProps,
-    MinimumToBind,
+    MinPropsToBind,
     SmolInputChangeHandler,
     Bind,
     DisplayNValue,
@@ -34,7 +34,7 @@ type BoundFields<Entity> = { [key in keyof Entity]?: MoreGenericConfigForBind<En
 
 function useSmolForms<
     Entity,
-    FieldBoundProps extends MinimumToBind<Entity> = MuiBindProps<Entity>
+    FieldBoundProps extends MinPropsToBind<Entity> = MuiBindProps<Entity>
 >({
     initial = {},
     onValidationError,

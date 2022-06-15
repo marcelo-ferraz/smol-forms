@@ -3,13 +3,13 @@ import React, {
 } from 'react';
 import SmolFormFactory from './SmolFormFactory';
 import {
-    SmolFormRef, SmolFormProps, MinimumToBind, MuiBindProps,
+    SmolFormRef, SmolFormProps, MinPropsToBind, MuiBindProps,
 } from './types';
 import useSmolForms from './useSmolForm';
 
 function SmolFormInner<
     Entity,
-    R extends MinimumToBind<Entity> = MuiBindProps<Entity>
+    R extends MinPropsToBind<Entity> = MuiBindProps<Entity>
 >({
     initial = {},
     form,

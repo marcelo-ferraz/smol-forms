@@ -66,8 +66,6 @@ export const curryChange = (
         });
         jest.advanceTimersByTime(500);
         jest.runAllTimers();
-        // no need for now, as the debounce is off
-        // jest.advanceTimersByTime(DEFAULT_CHANGE_WAIT);
     },
 );
 

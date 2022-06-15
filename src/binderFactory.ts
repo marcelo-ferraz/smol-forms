@@ -4,7 +4,7 @@ import { destructureCfg } from './helpers';
 import { int, float } from './inputTypes';
 import {
     ValidationErrors,
-    MinimumToBind,
+    MinPropsToBind,
     SmolInputChangeHandler,
     MoreGenericConfigForBind,
     BindingInput,
@@ -16,7 +16,7 @@ import {
 
 function binderFactory<
     Entity,
-    FieldBoundProps extends MinimumToBind<Entity>
+    FieldBoundProps extends MinPropsToBind<Entity>
 >(
     entity: DisplayNValue<Entity>,
     validationErrors: ValidationErrors<Entity>,

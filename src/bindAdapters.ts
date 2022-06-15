@@ -2,7 +2,7 @@ import {
     MuiBindProps,
     SmolChangeEvent,
     BindArgs,
-    MinimumToBind,
+    MinPropsToBind,
 } from './types';
 
 export const DEFAULT_VALUE = '';
@@ -27,7 +27,7 @@ const defaultAdapter = <Entity>({
     entity,
     selector,
     fieldChangeHandler,
-}: BindArgs<Entity>) : MinimumToBind<Entity> => {
+}: BindArgs<Entity>) : MinPropsToBind<Entity> => {
     const defaultValue = (
         // if config is provided and defaultValue is provided including null
         !!cfg && cfg.defaultValue !== undefined
