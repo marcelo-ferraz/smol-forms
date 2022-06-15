@@ -8,7 +8,7 @@ import {
 
 import binderFactory from './binderFactory';
 
-import { runOrReduce, useDebounce } from './helpers';
+import { runOrReduce, useDebounce as useDebouncedValue } from './helpers';
 import {
     FormHookProps,
     FormHookResult,
@@ -20,6 +20,7 @@ import {
     DisplayNValue,
     SmolChangeCallbackArgs,
     MoreGenericConfigForBind,
+    OnBindingCallback,
 } from './types';
 
 // I could just have the spread, but it wouldnt copy nested objs
@@ -49,9 +50,14 @@ function useSmolForms<
         value: oldSchoolDeepCopy(initial),
         display: oldSchoolDeepCopy(initial),
     });
-    const debouncedEntity = useDebounce(entityState, delay);
+    const debouncedEntity = useDebouncedValue(entityState, delay);
 
     const [validationErrors, setValidationErrors] = useState<ValidationErrors<Entity>>({});
+    /* TODO: there might be a racing condition.
+        I try to mitigate it by debouncing the changes,
+        so the last value is the one to have the reference saved,
+        but I need to keep an eye on it.
+    */
     const lastEventRef = useRef<ChangeArgs<Entity>>(null);
 
     useEffect(() => {
@@ -139,65 +145,62 @@ function useSmolForms<
         return handler;
     }, []);
 
-    const entity = useMemo(() => {
-        if (!lastEventRef.current || !changeCallback) {
-            return debouncedEntity;
-        }
-
-        const {
-            cfg,
-            event,
-            value,
-            selector,
-            prevEntity,
-            prevEntityDisplay,
-        } = lastEventRef.current;
-
-        // if the theres a change callback, we call it
-        let callbackResult = changeCallback({
-            cfg,
-            event,
-            value,
-            selector,
-            entity: debouncedEntity.value,
-            prevEntity,
-            entityDisplay: debouncedEntity.display,
-            prevEntityDisplay,
-        });
-
-        if (!callbackResult) { return debouncedEntity; }
-
-        // if the return is something
-        callbackResult = callbackResult as DisplayNValue<Entity>;
-        // that result can override the next state
-        return {
-            display: {
-                ...debouncedEntity.display,
-                ...(callbackResult.display ?? {}),
-            },
-            value: {
-                ...debouncedEntity.value,
-                ...(callbackResult.value ?? {}),
-            },
-        };
-    }, [changeCallback, debouncedEntity]);
-
-    const validate = useCallback(
-        () => {
+    const internalValidate2 = useCallback(
+        (
+            selectorsNvalues: [keyof Entity, unknown][],
+            ent: DisplayNValue<Entity>,
+        ) => {
             if (!lastEventRef.current) { return null; }
 
-            const {
-                cfg,
-                value,
-                selector,
-            } = lastEventRef.current;
+            const newErrors = selectorsNvalues.reduce(
+                (errs, [selector, value]) => {
+                    const cfg = boundFields.current[selector];
+                    const val = value ?? ent.display[selector];
+
+                    const itemErrors = runOrReduce<string>(
+                        cfg?.validators, {
+                            // the visual value
+                            value: val,
+                            // the entity with the possible "proper value"
+                            entity: ent,
+                            // selector for that property
+                            selector,
+                        },
+                    );
+
+                    return {
+                        ...errs,
+                        [selector]: itemErrors.length ? itemErrors : undefined,
+                    };
+                }, {},
+            );
+
+            setValidationErrors(
+                (prevErrors) => ({
+                    ...prevErrors,
+                    ...newErrors,
+                }),
+            );
+
+            return !Object
+                .values(newErrors)
+                .some((err: string[]) => !!err?.length);
+        },
+        [],
+    );
+
+    const internalValidate = useCallback(
+        (selector: keyof Entity, value: unknown, ent: DisplayNValue<Entity>) => {
+            if (!lastEventRef.current) { return null; }
+
+            const cfg = boundFields.current[selector];
 
             const errors = runOrReduce<string>(
                 cfg?.validators, {
                     // the visual value
                     value,
                     // the entity with the possible "proper value"
-                    entity,
+                    entity: ent,
                     // selector for that property
                     selector,
                 },
@@ -228,26 +231,82 @@ function useSmolForms<
 
             return !errors.length;
         },
-        [entity],
+        [],
     );
 
-    useEffect(() => {
-        // try to apply any validations that were passed
-        validate();
-    }, [validate]);
+    const entity = useMemo(() => {
+        if (!lastEventRef.current || !changeCallback) {
+            return debouncedEntity;
+        }
+
+        const {
+            cfg,
+            event,
+            value,
+            selector,
+            prevEntity,
+            prevEntityDisplay,
+        } = lastEventRef.current;
+
+        // if the theres a change callback, we call it
+        let callbackResult = changeCallback({
+            cfg,
+            event,
+            value,
+            selector,
+            entity: debouncedEntity.value,
+            prevEntity,
+            entityDisplay: debouncedEntity.display,
+            prevEntityDisplay,
+        });
+
+        internalValidate(selector, value, callbackResult || debouncedEntity);
+
+        if (!callbackResult) { return debouncedEntity; }
+
+        // if the return is something
+        callbackResult = callbackResult as DisplayNValue<Entity>;
+        // that result can override the next state
+        return {
+            display: {
+                ...debouncedEntity.display,
+                ...(callbackResult.display ?? {}),
+            },
+            value: {
+                ...debouncedEntity.value,
+                ...(callbackResult.value ?? {}),
+            },
+        };
+    }, [changeCallback, debouncedEntity, internalValidate]);
 
     const bind = useMemo<Bind<Entity, FieldBoundProps>>(
-        () => binderFactory(
-            entityState,
-            validationErrors,
-            adapter,
-            fieldChangeHandler,
-        ), [
+        () => {
+            const keepTheConfig: OnBindingCallback<Entity> = (selector, cfg) => {
+                boundFields.current[selector] = cfg;
+            };
+
+            return binderFactory(
+                entityState,
+                validationErrors,
+                adapter,
+                fieldChangeHandler,
+                keepTheConfig,
+            );
+        }, [
             adapter,
             entityState,
             fieldChangeHandler,
             validationErrors,
         ],
+    );
+
+    const validate = useCallback(
+        (selector: keyof Entity) => internalValidate(
+            selector,
+            entity.display[selector],
+            entity,
+        ),
+        [entity, internalValidate],
     );
 
     return {

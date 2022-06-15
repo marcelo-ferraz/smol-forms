@@ -142,7 +142,7 @@ export type FormHookResult<
     bind: Bind<Entity, FieldBoundProps>;
     emitFieldChange: SmolInputChangeHandler<Entity>;
     entity: Partial<Entity>;
-    validate(): void,
+    validate(selector: keyof Entity): boolean,
     errors: ValidationErrors<Entity>;
     setErrors: Dispatch<SetStateAction<ValidationErrors<Entity>>>;
 }

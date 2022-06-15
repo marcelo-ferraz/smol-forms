@@ -12,6 +12,7 @@ import {
     IntArgs,
     NumberArgs,
     BindAdapter,
+    OnBindingCallback,
 } from './types';
 
 function binderFactory<
@@ -36,6 +37,8 @@ function binderFactory<
             validationErrors,
             entity,
         });
+
+        onBinding(selector, cfg);
 
         if (adapter) {
             return adapter({
