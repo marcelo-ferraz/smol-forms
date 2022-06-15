@@ -1,12 +1,9 @@
-import { act, renderHook } from '@testing-library/react-hooks';
+import { renderHook } from '@testing-library/react-hooks';
 import { randomInt } from 'crypto';
 import useSmolForm from './useSmolForm';
 import { DEFAULT_VALUE, muiAdapter } from './bindAdapters';
 import { curryChange, getDisplayNValue, TestEntity } from './test/helpers';
-// no need for now, as the debounce is off
-// import { DEFAULT_CHANGE_WAIT } from './defaultBindAdapter';
 
-// no need for now, as the debounce is off
 jest.useFakeTimers();
 
 describe('hook: useSmolForm', () => {
@@ -334,8 +331,8 @@ describe('hook: useSmolForm', () => {
             write(expectedValue.toString());
 
             expect(validator).toBeCalledWith({
-                // the visual value
-                value: expectedValue.toString(),
+                // the value
+                value: expectedValue,
                 // the entity with the possible "proper value"
                 entity,
                 // selector for that property
@@ -350,7 +347,7 @@ describe('hook: useSmolForm', () => {
 
             const expectedValue = randomInt(255).toString();
 
-            const validator = () => expectedValue;
+            const validator = jest.fn().mockReturnValue(expectedValue);
 
             const bindInput = { strValue: { validators: [validator] } };
 

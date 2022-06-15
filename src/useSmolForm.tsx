@@ -31,7 +31,25 @@ type ChangeArgs<Entity> = Omit<
     'entityDisplay' | 'entity'
 >;
 
-type BoundFields<Entity> = { [key in keyof Entity]?: MoreGenericConfigForBind<Entity> }
+type FieldsMetadata<Entity> = Partial<{
+    [key in keyof Entity]: MoreGenericConfigForBind<Entity> & { touched?: boolean};
+}>;
+
+const getFieldsToValidate = <Entity, >(
+    fieldsMetadata: FieldsMetadata<Entity>,
+    entity: Partial<Entity>,
+    validateAll = false,
+) => {
+    if (!fieldsMetadata) { return []; }
+
+    return Object
+        .entries(fieldsMetadata)
+        .filter(([, value]) => validateAll || (value as { touched?: boolean}).touched)
+        .map<[keyof Entity, unknown]>(([selector]) => [
+            selector as keyof Entity,
+            entity[selector as keyof Entity],
+        ]);
+};
 
 function useSmolForms<
     Entity,
@@ -44,12 +62,13 @@ function useSmolForms<
     delay = 300,
 }: Partial<FormHookProps<Entity, FieldBoundProps>> = {})
 : FormHookResult<Entity, FieldBoundProps> {
-    const boundFields = useRef<BoundFields<Entity>>({});
+    const fieldsMetadata = useRef<FieldsMetadata<Entity>>({});
 
     const [entityState, setEntityState] = useState<DisplayNValue<Entity>>({
         value: oldSchoolDeepCopy(initial),
         display: oldSchoolDeepCopy(initial),
     });
+
     const debouncedEntity = useDebouncedValue(entityState, delay);
 
     const [validationErrors, setValidationErrors] = useState<ValidationErrors<Entity>>({});
@@ -77,8 +96,8 @@ function useSmolForms<
             ) => {
                 let value: unknown;
 
-                if (cfg?.parser) {
-                    value = cfg?.parser(event);
+                if (cfg?.eventMap) {
+                    value = cfg?.eventMap(event);
                 } else {
                     const { target } = event;
 
@@ -90,6 +109,8 @@ function useSmolForms<
                 }
 
                 setEntityState((prevState) => {
+                    fieldsMetadata.current[selector].touched = true;
+
                     // copy previous state for changing
                     const nextState = oldSchoolDeepCopy(prevState);
 
@@ -145,7 +166,7 @@ function useSmolForms<
         return handler;
     }, []);
 
-    const internalValidate2 = useCallback(
+    const internalValidate = useCallback(
         (
             selectorsNvalues: [keyof Entity, unknown][],
             ent: DisplayNValue<Entity>,
@@ -154,7 +175,7 @@ function useSmolForms<
 
             const newErrors = selectorsNvalues.reduce(
                 (errs, [selector, value]) => {
-                    const cfg = boundFields.current[selector];
+                    const cfg = fieldsMetadata.current[selector];
                     const val = value ?? ent.display[selector];
 
                     const itemErrors = runOrReduce<string>(
@@ -170,7 +191,7 @@ function useSmolForms<
 
                     return {
                         ...errs,
-                        [selector]: itemErrors.length ? itemErrors : undefined,
+                        [selector]: itemErrors?.length ? itemErrors : undefined,
                     };
                 }, {},
             );
@@ -185,51 +206,6 @@ function useSmolForms<
             return !Object
                 .values(newErrors)
                 .some((err: string[]) => !!err?.length);
-        },
-        [],
-    );
-
-    const internalValidate = useCallback(
-        (selector: keyof Entity, value: unknown, ent: DisplayNValue<Entity>) => {
-            if (!lastEventRef.current) { return null; }
-
-            const cfg = boundFields.current[selector];
-
-            const errors = runOrReduce<string>(
-                cfg?.validators, {
-                    // the visual value
-                    value,
-                    // the entity with the possible "proper value"
-                    entity: ent,
-                    // selector for that property
-                    selector,
-                },
-            );
-
-            // if there are errors, set them
-            if (errors.length) {
-                setValidationErrors(
-                    (prevErrors) => ({
-                        ...prevErrors,
-                        [selector]: [
-                            ...errors,
-                        ],
-                    }),
-                );
-            } else {
-                // else, clear them
-                setValidationErrors(
-                    (prevErrors) => {
-                        const nextErrors = { ...prevErrors };
-                        if (selector in nextErrors) {
-                            delete nextErrors[selector];
-                        }
-                        return nextErrors;
-                    },
-                );
-            }
-
-            return !errors.length;
         },
         [],
     );
@@ -260,8 +236,6 @@ function useSmolForms<
             prevEntityDisplay,
         });
 
-        internalValidate(selector, value, callbackResult || debouncedEntity);
-
         if (!callbackResult) { return debouncedEntity; }
 
         // if the return is something
@@ -277,12 +251,19 @@ function useSmolForms<
                 ...(callbackResult.value ?? {}),
             },
         };
-    }, [changeCallback, debouncedEntity, internalValidate]);
+    }, [changeCallback, debouncedEntity]);
+
+    useEffect(() => {
+        internalValidate(
+            getFieldsToValidate(fieldsMetadata.current, entity.value),
+            entity,
+        );
+    }, [entity, internalValidate]);
 
     const bind = useMemo<Bind<Entity, FieldBoundProps>>(
         () => {
-            const keepTheConfig: OnBindingCallback<Entity> = (selector, cfg) => {
-                boundFields.current[selector] = cfg;
+            const keepTheMetadata: OnBindingCallback<Entity> = (selector, cfg) => {
+                fieldsMetadata.current[selector] = cfg ?? {};
             };
 
             return binderFactory(
@@ -290,7 +271,7 @@ function useSmolForms<
                 validationErrors,
                 adapter,
                 fieldChangeHandler,
-                keepTheConfig,
+                keepTheMetadata,
             );
         }, [
             adapter,
@@ -301,11 +282,22 @@ function useSmolForms<
     );
 
     const validate = useCallback(
-        (selector: keyof Entity) => internalValidate(
-            selector,
-            entity.display[selector],
-            entity,
-        ),
+        (selector: keyof Entity | 'all' | 'touched') => {
+            if (selector === 'all' || selector === 'touched') {
+                const fieldsToValidate = getFieldsToValidate(
+                    fieldsMetadata.current,
+                    entity.value,
+                    selector === 'all',
+                );
+
+                return internalValidate(fieldsToValidate, entity);
+            }
+
+            return internalValidate(
+                [[selector, entity.value[selector]]],
+                entity,
+            );
+        },
         [entity, internalValidate],
     );
 

@@ -23,7 +23,7 @@ function binderFactory<
     validationErrors: ValidationErrors<Entity>,
     adapter: BindAdapter<Entity, FieldBoundProps>,
     fieldChangeHandler: SmolInputChangeHandler<Entity>,
-    onBinding: OnBindingCallback<Entity>,
+    onBinding?: OnBindingCallback<Entity>,
 ) {
     const coreFunc = (
         selector: keyof Entity,
@@ -38,7 +38,9 @@ function binderFactory<
             entity,
         });
 
-        onBinding(selector, cfg);
+        if (onBinding) {
+            onBinding(selector, cfg);
+        }
 
         if (adapter) {
             return adapter({

@@ -5,7 +5,7 @@ import { muiAdapter } from './bindAdapters';
 import {
     curryChange, generateChars, generateFloat, generateInt, TestEntity,
 } from './test/helpers';
-import { ValidateFunc } from './types';
+import { Validator } from './types';
 import useSmolForm from './useSmolForm';
 import {
     DEFAULT_EMAIL_MSG, DEFAULT_FLOAT_MSG, DEFAULT_GENERIC_MSG, DEFAULT_INT_MSG, DEFAULT_REQUIRED_MSG, isEmail, isFloat, isInt, isRequired, pattern, regexes,
@@ -16,7 +16,7 @@ jest.useFakeTimers();
 type TestArgs = {
     value?: string;
     selector?: keyof TestEntity;
-    validator: ValidateFunc | ValidateFunc[];
+    validator: Validator<TestEntity> | Validator<TestEntity>[];
     msg?: string;
 };
 

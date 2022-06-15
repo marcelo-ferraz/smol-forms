@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
     BindingInput,
     MoreGenericConfigForBind,
@@ -29,12 +29,12 @@ export function destructureCfg<T>(
     // this is a short-hand for the event parser
     if (typeof unknownValue === 'function') {
         cfg = {
-            parser: unknownValue as Runnable,
+            eventMap: unknownValue as Runnable,
         };
     // this is a short-hand for the validators
     } else if (Array.isArray(unknownValue)) {
         cfg = {
-            validators: unknownValue as Validator<T, typeof selector>,
+            validators: unknownValue as unknown as Validator<T, typeof selector>,
         };
     // declarative config object
     } else if (typeof unknownValue === 'object') {

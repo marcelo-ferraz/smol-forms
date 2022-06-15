@@ -1,4 +1,4 @@
-import { ValidateFuncArgs } from './types';
+import { ValidatorArgs } from './types';
 
 export const regexes = {
     // RFC 5322
@@ -15,44 +15,46 @@ export const DEFAULT_GENERIC_MSG = 'This field is incorrect';
 export const DEFAULT_EMAIL_MSG = 'This field is an email';
 
 export const isRequired = (
-    { value }: ValidateFuncArgs,
+    { value }: ValidatorArgs,
     msg = DEFAULT_REQUIRED_MSG,
-) => (!value?.toString().trim() ? msg : null);
+) => (
+    !(value as unknown)?.toString().trim() ? msg : null
+);
 
 export const isInt = (
-    { value }: ValidateFuncArgs,
+    { value }: ValidatorArgs,
     msg = DEFAULT_INT_MSG,
 ) => (
     !regexes.isInt.test(
-        value?.toString().trim() ?? '',
+        (value as unknown)?.toString().trim() ?? '',
     ) ? msg : null
 );
 
 export const isFloat = (decimal = 2) => (
-    { value }: ValidateFuncArgs,
+    { value }: ValidatorArgs,
     msg = DEFAULT_FLOAT_MSG,
 ) => (
     !regexes.isFloat(decimal).test(
-        value?.toString().trim() ?? '',
+        (value as unknown)?.toString().trim() ?? '',
     ) ? msg : null
 );
 
 export const pattern = (
     regex: RegExp,
 ) => (
-    { value }: ValidateFuncArgs,
+    { value }: ValidatorArgs,
     msg = DEFAULT_GENERIC_MSG,
 ) => (
     !new RegExp(regex).test(
-        value?.toString().trim() ?? '',
+        (value as unknown)?.toString().trim() ?? '',
     ) ? msg : null
 );
 
 export const isEmail = (
-    { value }: ValidateFuncArgs,
+    { value }: ValidatorArgs,
     msg = DEFAULT_EMAIL_MSG,
 ) => (
     !regexes.isEmail.test(
-        value?.toString().trim() ?? '',
+        (value as unknown)?.toString().trim() ?? '',
     ) ? msg : null
 );

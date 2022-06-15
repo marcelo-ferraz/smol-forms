@@ -1,6 +1,6 @@
 import { Dispatch, ReactElement, SetStateAction } from 'react';
 
-type OnlyOne<T> = keyof T extends infer K
+type OnlyOneProp<T> = keyof T extends infer K
     ? K extends unknown
     ? { [key in keyof T]?: key extends K ? T[key] : never }
     : never
@@ -12,47 +12,47 @@ export type MuiBindProps<Entity> = MinPropsToBind<Entity> & {
     helperText: string;
 };
 
-export type Validator<
-    Entity,
-    key extends keyof Entity
-> = Runnable<string, { value: Entity[key], entity: Entity }>
-| Runnable<string, { value: Entity[key], entity: Entity }>[];
-
-export type BindingOptionsObj<Entity> = OnlyOne<{
-    [key in keyof Entity]: {
+export type BindingOptionsObjProp<
+    Entity = unknown,
+    key extends keyof Entity = keyof Entity
+> = {
         // still not supported
         // mask?: string;
-        changeWait?: number;
         defaultValue?: unknown;
-        parser?: Runnable;
-        type?: (value: Entity[key], entity: Entity) => [unknown, unknown];
-        validators?: Validator<Entity, key>;
-    }
-}>;
+        eventMap?: Runnable;
+        type?: (value: Entity[key], key: keyof Entity, entity: Entity) => [unknown, unknown];
+        validators?: Validator<Entity, key> | Validator<Entity, key>[];
+}
 
-export type ValidateFuncArgs<Entity = unknown> = Partial<{
-    selector: keyof Entity,
-    value: unknown,
-    entity: Entity,
+export type BindingOptionsObj<Entity> = OnlyOneProp<{
+    [Key in keyof Entity]: BindingOptionsObjProp<Entity, Key>
 }>;
-
-export type ValidateFunc<Entity = unknown> = Runnable<
-    string,
-    ValidateFuncArgs<Entity>
->
 
 export type MoreGenericConfigForBind<Entity> = {
     mask?: string;
-    changeWait?: number;
     defaultValue?: unknown;
-    parser?: Runnable;
+    eventMap?: Runnable;
     type?: (value: unknown, key: keyof Entity, entity: Partial<Entity>) => [unknown, unknown];
-    validators?: ValidateFunc<Entity> | ValidateFunc<Entity>[];
+    validators?: Validator<Entity> | Validator<Entity>[];
 };
+
+export type ValidatorArgs<
+    Entity = unknown,
+    key extends keyof Entity = keyof Entity
+> = Partial<{
+    selector: keyof Entity,
+    value: Entity[key],
+    entity: Entity,
+}>;
+
+export type Validator<
+    Entity,
+    Key extends keyof Entity = keyof Entity
+> = Runnable<string, ValidatorArgs<Entity, Key>>;
 
 export type BindingInput<Entity> = keyof Entity
 | BindingOptionsObj<Entity>
-| OnlyOne<{
+| OnlyOneProp<{
     [key in keyof Entity]:
         Runnable
         | (Validator<Entity, key>[]);
@@ -99,7 +99,7 @@ export type SmolChangeEvent = {
     };
 };
 
-export type SmolInputChangeHandler<Entity> = MoreGenericConfigForBind<Entity>['parser'] | (
+export type SmolInputChangeHandler<Entity> = MoreGenericConfigForBind<Entity>['eventMap'] | (
     (
         ev: SmolChangeEvent,
         selector?: keyof Entity,
@@ -122,7 +122,9 @@ export type SmolChangeCallbackArgs<Entity> = {
     prevEntityDisplay: Partial<{ [key in keyof Entity]: unknown; }>;
 };
 
-export type SmolChangeCallback<Entity> = (args: SmolChangeCallbackArgs<Entity>) => void | DisplayNValue<Entity>;
+export type SmolChangeCallback<Entity> = (
+    args: SmolChangeCallbackArgs<Entity>,
+) => void | DisplayNValue<Entity>;
 
 export type FormHookProps<
     Entity,
@@ -142,7 +144,7 @@ export type FormHookResult<
     bind: Bind<Entity, FieldBoundProps>;
     emitFieldChange: SmolInputChangeHandler<Entity>;
     entity: Partial<Entity>;
-    validate(selector: keyof Entity): boolean,
+    validate(selector: keyof Entity | 'all' | 'touched'): boolean,
     errors: ValidationErrors<Entity>;
     setErrors: Dispatch<SetStateAction<ValidationErrors<Entity>>>;
 }

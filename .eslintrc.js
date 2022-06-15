@@ -95,6 +95,7 @@ module.exports = {
     }, {
         // tests usually need a more loose set of rules
         files: [
+            './src/test/**/*+(.js|.ts|.jsx|.tsx)',
             './src/**/*.+(test|spec)+(.js|.ts|.jsx|.tsx)',            
         ],
         env: {

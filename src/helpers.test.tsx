@@ -71,7 +71,7 @@ describe('helpers', () => {
             );
 
             expect(selector).toBe(expectedSelector);
-            expect(cfg.parser).toBe(expectedParser);
+            expect(cfg.eventMap).toBe(expectedParser);
         });
 
         // { [key]: [() => {}, () => {}]}
@@ -95,7 +95,7 @@ describe('helpers', () => {
             const [selector, cfg] = destructureCfg<TestEntity>(
                 {
                     [expectedSelector]: {
-                        parser: expectedParser,
+                        eventMap: expectedParser,
                         validators: expectedValidators,
                         type: expectedType,
                     },
@@ -103,7 +103,7 @@ describe('helpers', () => {
             );
 
             expect(selector).toBe(expectedSelector);
-            expect(cfg.parser).toBe(expectedParser);
+            expect(cfg.eventMap).toBe(expectedParser);
             expect(cfg.type).toBe(expectedType);
             expect(cfg.validators).toBe(expectedValidators);
         });
