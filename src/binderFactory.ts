@@ -24,7 +24,7 @@ function binderFactory<
     validationErrors: ValidationErrors<Entity>,
     adapter: BindAdapter<Entity, FieldBoundProps>,
     fieldChangeHandler: SmolInputChangeHandler<Entity>,
-    fieldBlurHandler: Runnable,
+    fieldBlurHandler: () => void,
     onBinding?: OnBindingCallback<Entity>,
 ) {
     const coreFunc = (

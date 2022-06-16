@@ -44,10 +44,11 @@ describe('binderFactory', () => {
     describe('bind', () => {
         it('should call the defaultAdapter with the proper args', () => {
             const onChangeSpy = jest.fn();
+            const onBlurSpy = jest.fn();
             const bind = binderFactory<
                 TestEntity,
                 MuiBindProps<TestEntity>
-            >(testEnt, noErrors, noAdapter, onChangeSpy);
+            >(testEnt, noErrors, noAdapter, onChangeSpy, onBlurSpy);
 
             const expectedSelector = 'id';
             bind(expectedSelector);
@@ -56,17 +57,19 @@ describe('binderFactory', () => {
                 cfg: null,
                 entity: testEnt,
                 fieldChangeHandler: onChangeSpy,
+                fieldBlurHandler: onBlurSpy,
                 selector: expectedSelector,
                 validationErrors: noErrors,
             });
         });
         it('should call the custom adapter with the right args', () => {
             const onChangeSpy = jest.fn();
+            const onBlurSpy = jest.fn();
             const customAdapter = jest.fn();
             const bind = binderFactory<
                 TestEntity,
                 MuiBindProps<TestEntity>
-            >(testEnt, noErrors, customAdapter, onChangeSpy);
+            >(testEnt, noErrors, customAdapter, onChangeSpy, onBlurSpy);
 
             const expectedSelector = 'id';
             bind(expectedSelector);
@@ -75,6 +78,7 @@ describe('binderFactory', () => {
                 cfg: null,
                 entity: testEnt,
                 fieldChangeHandler: onChangeSpy,
+                fieldBlurHandler: onBlurSpy,
                 selector: expectedSelector,
                 validationErrors: noErrors,
                 bind: expect.anything(),
@@ -85,12 +89,13 @@ describe('binderFactory', () => {
     describe('bind.int', () => {
         it('should call the defaultAdapter with the proper args', () => {
             const onChangeSpy = jest.fn();
+            const onBlurSpy = jest.fn();
             const expectedSelector = 'intValue';
 
             const bind = binderFactory<
                 TestEntity,
                 MuiBindProps<TestEntity>
-            >(testEnt, noErrors, noAdapter, onChangeSpy);
+            >(testEnt, noErrors, noAdapter, onChangeSpy, onBlurSpy);
 
             bind.int(expectedSelector);
 
@@ -98,19 +103,21 @@ describe('binderFactory', () => {
                 cfg: expect.any(Object),
                 entity: testEnt,
                 fieldChangeHandler: onChangeSpy,
+                fieldBlurHandler: onBlurSpy,
                 selector: expectedSelector,
                 validationErrors: noErrors,
             });
         });
         it('should set the type to use int', () => {
             const onChangeSpy = jest.fn();
+            const onBlurSpy = jest.fn();
             const input = generateChars(4, GenFlags.all);
             const selector = 'intValue';
 
             const bind = binderFactory<
                 TestEntity,
                 MuiBindProps<TestEntity>
-            >(testEnt, noErrors, noAdapter, onChangeSpy);
+            >(testEnt, noErrors, noAdapter, onChangeSpy, onBlurSpy);
 
             bind.int(selector);
 
@@ -121,22 +128,18 @@ describe('binderFactory', () => {
             cfg.type(input, null, null);
 
             expect(int).toBeCalled();
-
-            // (defaultBindAdapter as jest.SpiedFunction<int>).mock.calls
-            // bind.int('intValue');
-            // bind.float('floatValue');
-            // bind.nullable('floatValue');
         });
     });
     describe('bind.float', () => {
         it('should call the defaultAdapter with the proper args', () => {
             const onChangeSpy = jest.fn();
+            const onBlurSpy = jest.fn();
             const expectedSelector = 'intValue';
 
             const bind = binderFactory<
                 TestEntity,
                 MuiBindProps<TestEntity>
-            >(testEnt, noErrors, noAdapter, onChangeSpy);
+            >(testEnt, noErrors, noAdapter, onChangeSpy, onBlurSpy);
 
             bind.int(expectedSelector);
 
@@ -144,6 +147,7 @@ describe('binderFactory', () => {
                 cfg: expect.any(Object),
                 entity: testEnt,
                 fieldChangeHandler: onChangeSpy,
+                fieldBlurHandler: onBlurSpy,
                 selector: expectedSelector,
                 validationErrors: noErrors,
             });
@@ -151,13 +155,14 @@ describe('binderFactory', () => {
 
         it('should set the type to use float', () => {
             const onChangeSpy = jest.fn();
+            const onBlurSpy = jest.fn();
             const input = generateChars(4, GenFlags.all);
             const selector = 'floatValue';
 
             const bind = binderFactory<
                 TestEntity,
                 MuiBindProps<TestEntity>
-            >(testEnt, noErrors, noAdapter, onChangeSpy);
+            >(testEnt, noErrors, noAdapter, onChangeSpy, onBlurSpy);
 
             bind.float(selector);
 
@@ -173,12 +178,13 @@ describe('binderFactory', () => {
     describe('bind.nullable', () => {
         it('should set the default value to null', () => {
             const onChangeSpy = jest.fn();
+            const onBlurSpy = jest.fn();
             const selector = 'id';
 
             const bind = binderFactory<
                 TestEntity,
                 MuiBindProps<TestEntity>
-            >(testEnt, noErrors, noAdapter, onChangeSpy);
+            >(testEnt, noErrors, noAdapter, onChangeSpy, onBlurSpy);
 
             bind.nullable(selector);
 
