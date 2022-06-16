@@ -13,6 +13,7 @@ import {
     NumberArgs,
     BindAdapter,
     OnBindingCallback,
+    Runnable,
 } from './types';
 
 function binderFactory<
@@ -23,6 +24,7 @@ function binderFactory<
     validationErrors: ValidationErrors<Entity>,
     adapter: BindAdapter<Entity, FieldBoundProps>,
     fieldChangeHandler: SmolInputChangeHandler<Entity>,
+    fieldBlurHandler: Runnable,
     onBinding?: OnBindingCallback<Entity>,
 ) {
     const coreFunc = (
@@ -33,6 +35,7 @@ function binderFactory<
         const bind = () => defaultBindAdapter<Entity>({
             selector,
             fieldChangeHandler: changeHandler,
+            fieldBlurHandler,
             cfg,
             validationErrors,
             entity,
@@ -46,6 +49,7 @@ function binderFactory<
             return adapter({
                 selector,
                 fieldChangeHandler: changeHandler,
+                fieldBlurHandler,
                 cfg,
                 validationErrors,
                 entity,

@@ -2,7 +2,7 @@ import React from 'react';
 import { render } from '@testing-library/react';
 import { randomInt } from 'crypto';
 import SmolForm from './SmolForm';
-import { fireChange, TestEntity } from './test/helpers';
+import { trigger, TestEntity } from './test/helpers';
 
 jest.useFakeTimers();
 
@@ -32,7 +32,7 @@ describe('<SmollForm />', () => {
                 />,
             );
 
-            fireChange(
+            trigger.change(
                 form.getByTestId(expectedSelector), {
                     target: { value: expectedInput },
                 },

@@ -3,7 +3,7 @@ import { randomInt } from 'crypto';
 import cases from 'jest-in-case';
 import { muiAdapter } from './bindAdapters';
 import {
-    curryChange, generateChars, generateFloat, generateInt, TestEntity,
+    changeFromBind, blurFromBind, generateChars, generateFloat, generateInt, TestEntity, trigger,
 } from './test/helpers';
 import { Validator } from './types';
 import useSmolForm from './useSmolForm';
@@ -27,15 +27,14 @@ describe('integration: useSmolForm hook + validators', () => {
         }: TestArgs) => {
             const { result } = renderHook(() => useSmolForm<TestEntity>());
 
-            const write = curryChange(
-                result
-                    .current
-                    .bind({ [selector]: [validator] }),
+            changeFromBind(
+                result.current.bind({ [selector]: [validator] }),
+                value,
             );
 
-            write(value);
-            jest.runAllTimers();
-            jest.advanceTimersByTime(500);
+            blurFromBind(
+                result.current.bind({ [selector]: [validator] }),
+            );
 
             const error = result.current.errors[selector];
 
@@ -108,17 +107,16 @@ describe('integration: useSmolForm hook + validators', () => {
 
         const validator = isRequired;
 
-        const write = curryChange(
-            result
-                .current
-                .bind({ [selector]: [validator] }),
-        );
-
         for (let i = 0; i < randomInt(10); i += 1) {
-            write(expectedValue);
-        }
+            changeFromBind(
+                result.current.bind({ [selector]: [validator] }),
+                expectedValue,
+            );
 
-        jest.runAllTimers();
+            blurFromBind(
+                result.current.bind({ [selector]: [validator] }),
+            );
+        }
 
         const error = result.current.errors[selector];
 
@@ -126,7 +124,7 @@ describe('integration: useSmolForm hook + validators', () => {
     });
 
     it('should have only one error message per validator even if write invalid values multiple times', () => {
-        const { result } = renderHook(() => useSmolForm<TestEntity>());
+        const { result } = renderHook(() => useSmolForm<TestEntity>({ delay: 0 }));
 
         const expectedValue = generateChars(10);
         const selector = 'strValue';
@@ -140,16 +138,16 @@ describe('integration: useSmolForm hook + validators', () => {
             isInt,
         ];
 
-        const write = curryChange(
-            result
-                .current
-                .bind({ [selector]: validators }),
-        );
-
         for (let i = 0; i < randomInt(10); i += 1) {
-            write(expectedValue);
+            changeFromBind(
+                result.current.bind({ [selector]: validators }),
+                expectedValue,
+            );
+
+            blurFromBind(
+                result.current.bind({ [selector]: validators }),
+            );
         }
-        jest.runAllTimers();
 
         const error = result.current.errors[selector];
 
@@ -161,19 +159,22 @@ describe('integration: useSmolForm hook + validators', () => {
             adapter: muiAdapter,
         }));
 
+        const selector = 'strValue';
+
         const expectedValue = randomInt(255).toString();
 
         const validator = () => expectedValue;
 
-        const bindInput = { strValue: { validators: [validator] } };
+        const bindInput = { [selector]: { validators: [validator] } };
 
-        const write = curryChange(
-            result
-                .current
-                .bind(bindInput),
+        changeFromBind(
+            result.current.bind({ [selector]: [validator] }),
+            expectedValue,
         );
 
-        write('anything');
+        blurFromBind(
+            result.current.bind({ [selector]: [validator] }),
+        );
 
         const errorFromState = result.current.errors.strValue[0];
         const { helperText } = result.current.bind.int(bindInput);

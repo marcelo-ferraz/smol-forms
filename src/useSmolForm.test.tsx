@@ -2,7 +2,9 @@ import { renderHook } from '@testing-library/react-hooks';
 import { randomInt } from 'crypto';
 import useSmolForm from './useSmolForm';
 import { DEFAULT_VALUE, muiAdapter } from './bindAdapters';
-import { curryChange, getDisplayNValue, TestEntity } from './test/helpers';
+import {
+    blurFromBind, changeFromBind, getDisplayNValue, TestEntity,
+} from './test/helpers';
 
 jest.useFakeTimers();
 
@@ -12,21 +14,31 @@ describe('hook: useSmolForm', () => {
             it('should properly accept the entry 1.001', () => {
                 const args = {};
                 const { result } = renderHook(() => useSmolForm<TestEntity>(args));
-                const { bind } = result.current;
 
-                const boundProps = bind.float('floatValue');
-
-                const write = curryChange(boundProps);
-
-                write('1');
+                changeFromBind(
+                    result.current.bind.float('floatValue'),
+                    '1',
+                );
                 const one = getDisplayNValue('floatValue', result);
-                write('1.');
+                changeFromBind(
+                    result.current.bind.float('floatValue'),
+                    '1.',
+                );
                 const oneDot = getDisplayNValue('floatValue', result);
-                write('1.0');
+                changeFromBind(
+                    result.current.bind.float('floatValue'),
+                    '1.0',
+                );
                 const oneDotZero = getDisplayNValue('floatValue', result);
-                write('1.00');
+                changeFromBind(
+                    result.current.bind.float('floatValue'),
+                    '1.00',
+                );
                 const oneDotZeroZero = getDisplayNValue('floatValue', result);
-                write('1.001');
+                changeFromBind(
+                    result.current.bind.float('floatValue'),
+                    '1.001',
+                );
                 const oneDotZeroZeroOne = getDisplayNValue('floatValue', result);
 
                 expect(one).toStrictEqual(['1', 1]);
@@ -39,14 +51,11 @@ describe('hook: useSmolForm', () => {
             it('should not accept letters', () => {
                 const { result } = renderHook(() => useSmolForm<TestEntity>());
 
-                const write = curryChange(
-                    result
-                        .current
-                        .bind
-                        .float('floatValue'),
+                changeFromBind(
+                    result.current.bind.float('floatValue'),
+                    'b',
                 );
 
-                write('b');
                 const value = getDisplayNValue('floatValue', result);
 
                 expect(value).toStrictEqual([DEFAULT_VALUE, undefined]);
@@ -55,18 +64,20 @@ describe('hook: useSmolForm', () => {
             it('should only accept numbers', () => {
                 const { result } = renderHook(() => useSmolForm<TestEntity>());
 
-                const write = curryChange(
-                    result
-                        .current
-                        .bind
-                        .float('floatValue'),
+                changeFromBind(
+                    result.current.bind.float('floatValue'),
+                    '1',
                 );
-
-                write('1');
                 const firstEntry = getDisplayNValue('floatValue', result);
-                write('1b');
+                changeFromBind(
+                    result.current.bind.float('floatValue'),
+                    '1b',
+                );
                 const secondEntry = getDisplayNValue('floatValue', result);
-                write('12');
+                changeFromBind(
+                    result.current.bind.float('floatValue'),
+                    '12',
+                );
                 const thirdEntry = getDisplayNValue('floatValue', result);
 
                 expect(firstEntry).toStrictEqual(['1', 1]);
@@ -77,22 +88,30 @@ describe('hook: useSmolForm', () => {
             it('should filter the decimal', () => {
                 const { result } = renderHook(() => useSmolForm<TestEntity>());
 
-                const write = curryChange(
-                    result
-                        .current
-                        .bind
-                        .float('floatValue'),
+                changeFromBind(
+                    result.current.bind.float('floatValue'),
+                    '1',
                 );
-
-                write('1');
                 const one = getDisplayNValue('floatValue', result);
-                write('1.');
+                changeFromBind(
+                    result.current.bind.float('floatValue'),
+                    '1.',
+                );
                 const oneDot = getDisplayNValue('floatValue', result);
-                write('1.');
+                changeFromBind(
+                    result.current.bind.float('floatValue'),
+                    '1..',
+                );
                 const oneDotDot = getDisplayNValue('floatValue', result);
-                write('1.2');
+                changeFromBind(
+                    result.current.bind.float('floatValue'),
+                    '1.2',
+                );
                 const OneDotTwo = getDisplayNValue('floatValue', result);
-                write('1.2.');
+                changeFromBind(
+                    result.current.bind.float('floatValue'),
+                    '1.2.',
+                );
                 const OneDotTwoDot = getDisplayNValue('floatValue', result);
 
                 expect(one).toStrictEqual(['1', 1]);
@@ -107,14 +126,14 @@ describe('hook: useSmolForm', () => {
 
                 const validator = jest.fn();
 
-                const write = curryChange(
-                    result
-                        .current
-                        .bind
-                        .float({ floatValue: [validator] }),
+                changeFromBind(
+                    result.current.bind.float({ floatValue: [validator] }),
+                    'a',
                 );
 
-                write('a');
+                blurFromBind(
+                    result.current.bind.float({ floatValue: [validator] }),
+                );
 
                 expect(validator).not.toBeCalled();
             });
@@ -124,14 +143,11 @@ describe('hook: useSmolForm', () => {
             it('should not accept letters', () => {
                 const { result } = renderHook(() => useSmolForm<TestEntity>());
 
-                const write = curryChange(
-                    result
-                        .current
-                        .bind
-                        .float('intValue'),
+                changeFromBind(
+                    result.current.bind.int('intValue'),
+                    'b',
                 );
 
-                write('b');
                 const value = getDisplayNValue('intValue', result);
 
                 expect(value).toStrictEqual([DEFAULT_VALUE, undefined]);
@@ -140,18 +156,20 @@ describe('hook: useSmolForm', () => {
             it('should only accept numbers', () => {
                 const { result } = renderHook(() => useSmolForm<TestEntity>());
 
-                const write = curryChange(
-                    result
-                        .current
-                        .bind
-                        .int('intValue'),
+                changeFromBind(
+                    result.current.bind.int('intValue'),
+                    '1',
                 );
-
-                write('1');
                 const one = getDisplayNValue('intValue', result);
-                write('1b');
+                changeFromBind(
+                    result.current.bind.int('intValue'),
+                    '1b',
+                );
                 const oneB = getDisplayNValue('intValue', result);
-                write('12');
+                changeFromBind(
+                    result.current.bind.int('intValue'),
+                    '12',
+                );
                 const oneTwo = getDisplayNValue('intValue', result);
 
                 expect(one).toStrictEqual(['1', 1]);
@@ -164,14 +182,14 @@ describe('hook: useSmolForm', () => {
 
                 const validator = jest.fn();
 
-                const write = curryChange(
-                    result
-                        .current
-                        .bind
-                        .int({ intValue: [validator] }),
+                changeFromBind(
+                    result.current.bind.int({ intValue: [validator] }),
+                    'a',
                 );
 
-                write('a');
+                blurFromBind(
+                    result.current.bind.int({ intValue: [validator] }),
+                );
 
                 expect(validator).not.toBeCalled();
             });
@@ -192,12 +210,13 @@ describe('hook: useSmolForm', () => {
             it('should change the state when changing the value', () => {
                 const { result } = renderHook(() => useSmolForm<TestEntity>());
 
-                const write = curryChange(
+                const input = randomInt(255).toString();
+
+                changeFromBind(
                     result.current.bind.nullable('strValue'),
+                    input,
                 );
 
-                const input = randomInt(255).toString();
-                write(input);
                 const state = getDisplayNValue('strValue', result);
 
                 expect(state).toStrictEqual([input, input]);
@@ -207,12 +226,13 @@ describe('hook: useSmolForm', () => {
         it('should change the state when changing the value', () => {
             const { result } = renderHook(() => useSmolForm<TestEntity>());
 
-            const write = curryChange(
+            const input = randomInt(255).toString();
+
+            changeFromBind(
                 result.current.bind('strValue'),
+                input,
             );
 
-            const input = randomInt(255).toString();
-            write(input);
             const state = getDisplayNValue('strValue', result);
 
             expect(state).toStrictEqual([input, input]);
@@ -242,11 +262,10 @@ describe('hook: useSmolForm', () => {
                 const expectedEvent = { target: { value: '0' } };
                 const bindInput = { strValue: (e: unknown) => e };
 
-                const write = curryChange(
+                changeFromBind(
                     result.current.bind(bindInput),
+                    expectedEvent.target.value,
                 );
-
-                write(expectedEvent.target.value);
 
                 const complexEntry = result.current.entity.strValue;
 
@@ -258,18 +277,20 @@ describe('hook: useSmolForm', () => {
                     adapter: muiAdapter,
                 }));
 
+                const selector = 'strValue';
                 const expectedError1 = randomInt(255).toString();
                 const expectedError2 = randomInt(255).toString();
                 const validator1 = () => expectedError1;
                 const validator2 = () => expectedError2;
 
-                const write = curryChange(
-                    result
-                        .current
-                        .bind({ strValue: [validator1, validator2] }),
+                changeFromBind(
+                    result.current.bind({ [selector]: [validator1, validator2] }),
+                    '2',
                 );
 
-                write('2');
+                blurFromBind(
+                    result.current.bind.int({ [selector]: [validator1, validator2] }),
+                );
 
                 const [firstError, secondError] = result
                     .current
@@ -321,14 +342,14 @@ describe('hook: useSmolForm', () => {
 
             const validator = jest.fn();
 
-            const write = curryChange(
-                result
-                    .current
-                    .bind
-                    .int({ intValue: [validator] }),
+            changeFromBind(
+                result.current.bind.int({ [selector]: [validator] }),
+                expectedValue.toString(),
             );
 
-            write(expectedValue.toString());
+            blurFromBind(
+                result.current.bind.int({ [selector]: [validator] }),
+            );
 
             expect(validator).toBeCalledWith({
                 // the value
@@ -344,22 +365,23 @@ describe('hook: useSmolForm', () => {
             const { result } = renderHook(() => useSmolForm<TestEntity>({
                 adapter: muiAdapter,
             }));
-
+            const selector = 'strValue';
             const expectedValue = randomInt(255).toString();
 
             const validator = jest.fn().mockReturnValue(expectedValue);
 
-            const bindInput = { strValue: { validators: [validator] } };
+            const bindInput = { [selector]: { validators: [validator] } };
 
-            const write = curryChange(
-                result
-                    .current
-                    .bind(bindInput),
+            changeFromBind(
+                result.current.bind(bindInput),
+                expectedValue,
             );
 
-            write('anything');
+            blurFromBind(
+                result.current.bind(bindInput),
+            );
 
-            const errorFromState = result.current.errors.strValue[0];
+            const errorFromState = result.current.errors[selector][0];
             const { helperText } = result.current.bind.int(bindInput);
 
             expect(errorFromState).toBe(expectedValue);
@@ -370,34 +392,33 @@ describe('hook: useSmolForm', () => {
     describe('change callback', () => {
         it('should call the callback once per change', () => {
             const handlerStub = jest.fn();
-            const expectedSelector = 'strValue';
-            const expectedInput = randomInt(255).toString();
+            const selector = 'strValue';
+            const expectedValue = randomInt(255).toString();
             const expectedEntity = {
-                [expectedSelector]: expectedInput,
+                [selector]: expectedValue,
             };
             const expectedDisplay = {
-                [expectedSelector]: expectedInput,
+                [selector]: expectedValue,
             };
 
             const { result } = renderHook(
                 () => useSmolForm<TestEntity>({ onChange: handlerStub }),
             );
 
-            const write = curryChange(
-                result.current.bind(expectedSelector),
+            changeFromBind(
+                result.current.bind(selector),
+                expectedValue,
             );
-
-            write(expectedInput);
 
             expect(handlerStub).toBeCalledWith({
                 event: expect.anything(),
                 cfg: null,
-                value: expectedInput,
+                value: expectedValue,
                 entityDisplay: expectedDisplay,
                 prevEntityDisplay: expect.anything(),
                 entity: expectedEntity,
                 prevEntity: {},
-                selector: expectedSelector,
+                selector,
             });
         });
     });
