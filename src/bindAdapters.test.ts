@@ -22,12 +22,14 @@ describe('defaultAdapter', () => {
 
     it('should set DEFAULT_VALUE as the default value if nothing is informed', () => {
         const onChangeSpy = jest.fn();
+        const onBlurSpy = jest.fn();
         const selector = 'emptyValue';
         const props = defaultAdapter<TestEntity>({
             selector,
             cfg: null,
             entity: testEnt,
             fieldChangeHandler: onChangeSpy,
+            fieldBlurHandler: onBlurSpy,
             validationErrors: noErrors,
         });
 
@@ -36,6 +38,7 @@ describe('defaultAdapter', () => {
 
     it('should set a the default value if nothing is informed', () => {
         const onChangeSpy = jest.fn();
+        const onBlurSpy = jest.fn();
         const selector = 'emptyValue';
         const expectedDefault = generateChars(4, GenFlags.all);
         const cfg = { defaultValue: expectedDefault };
@@ -44,6 +47,7 @@ describe('defaultAdapter', () => {
             selector,
             entity: testEnt,
             fieldChangeHandler: onChangeSpy,
+            fieldBlurHandler: onBlurSpy,
             validationErrors: noErrors,
         });
 
@@ -52,6 +56,7 @@ describe('defaultAdapter', () => {
 
     it('should get the value from entity.display', () => {
         const onChangeSpy = jest.fn();
+        const onBlurSpy = jest.fn();
         const selector = 'strValue';
         const expectedValue = generateChars(4, GenFlags.all);
         testEnt.display[selector] = expectedValue;
@@ -61,6 +66,7 @@ describe('defaultAdapter', () => {
             cfg: null,
             entity: testEnt,
             fieldChangeHandler: onChangeSpy,
+            fieldBlurHandler: onBlurSpy,
             validationErrors: noErrors,
         });
 
@@ -69,6 +75,7 @@ describe('defaultAdapter', () => {
 
     it('should get the value from entity.value if display is not available', () => {
         const onChangeSpy = jest.fn();
+        const onBlurSpy = jest.fn();
         const selector = 'strValue';
         const expectedValue = testEnt.value[selector];
 
@@ -77,6 +84,7 @@ describe('defaultAdapter', () => {
             cfg: null,
             entity: testEnt,
             fieldChangeHandler: onChangeSpy,
+            fieldBlurHandler: onBlurSpy,
             validationErrors: noErrors,
         });
 
@@ -85,6 +93,7 @@ describe('defaultAdapter', () => {
 
     it('should return the proper properties', () => {
         const onChangeSpy = jest.fn();
+        const onBlurSpy = jest.fn();
         const expectedSelector = 'strValue';
         const expectedValue = testEnt.value[expectedSelector];
         const expectedHelperText = generateChars(4);
@@ -95,12 +104,14 @@ describe('defaultAdapter', () => {
             cfg: null,
             entity: testEnt,
             fieldChangeHandler: onChangeSpy,
+            fieldBlurHandler: onBlurSpy,
             validationErrors: errors,
         });
 
         expect(props).toStrictEqual({
             'data-key': expectedSelector,
             onChange: expect.anything(),
+            onBlur: expect.anything(),
             value: expectedValue,
         });
     });
@@ -108,6 +119,7 @@ describe('defaultAdapter', () => {
     describe('muiAdapter', () => {
         it('should return the proper properties', () => {
             const onChangeSpy = jest.fn();
+            const onBlurSpy = jest.fn();
             const expectedSelector = 'strValue';
             const expectedValue = testEnt.value[expectedSelector];
             const expectedHelperText = generateChars(4);
@@ -118,6 +130,7 @@ describe('defaultAdapter', () => {
                 cfg: null,
                 entity: testEnt,
                 fieldChangeHandler: onChangeSpy,
+                fieldBlurHandler: onBlurSpy,
                 validationErrors: errors,
             });
 
@@ -125,6 +138,7 @@ describe('defaultAdapter', () => {
                 name: expectedSelector,
                 'data-key': expectedSelector,
                 onChange: expect.anything(),
+                onBlur: expect.anything(),
                 error: true,
                 helperText: expectedHelperText,
                 value: expectedValue,

@@ -109,8 +109,6 @@ function useSmolForms<
                 }
 
                 setEntityState((prevState) => {
-                    fieldsMetadata.current[selector].touched = true;
-
                     // copy previous state for changing
                     const nextState = oldSchoolDeepCopy(prevState);
 
@@ -172,14 +170,15 @@ function useSmolForms<
             ent: DisplayNValue<Entity>,
             justTest = false,
         ) => {
-            if (!lastEventRef.current) { return null; }
+            let isValid = true;
 
             const newErrors = selectorsNvalues.reduce(
                 (errs, [selector, value]) => {
                     const cfg = fieldsMetadata.current[selector];
+                    // // const cfg = fieldsMetadata[selector];
                     const val = value ?? ent.display[selector];
 
-                    const itemErrors = runOrReduce<string>(
+                    const itemErrors: string[] = runOrReduce<string>(
                         cfg?.validators, {
                             // the visual value
                             value: val,
@@ -189,6 +188,10 @@ function useSmolForms<
                             selector,
                         },
                     );
+
+                    if (isValid) {
+                        isValid = !itemErrors?.length;
+                    }
 
                     return {
                         ...errs,
@@ -205,14 +208,18 @@ function useSmolForms<
                     }),
                 );
             }
-            return !Object
-                .values(newErrors)
-                .some((err: string[]) => !!err?.length);
+            return isValid;
         },
-        [],
+        [fieldsMetadata],
     );
 
     const entity = useMemo(() => {
+        if (lastEventRef.current) {
+            fieldsMetadata.current[
+                lastEventRef.current.selector
+            ].touched = true;
+        }
+
         if (!lastEventRef.current || !changeCallback) {
             return debouncedEntity;
         }
@@ -255,39 +262,12 @@ function useSmolForms<
         };
     }, [changeCallback, debouncedEntity]);
 
-    useEffect(() => {
-        internalValidate(
-            getFieldsToValidate(fieldsMetadata.current, entity.value),
-            entity,
-        );
-    }, [entity, internalValidate]);
-
-    const bind = useMemo<Bind<Entity, FieldBoundProps>>(
-        () => {
-            const keepTheMetadata: OnBindingCallback<Entity> = (selector, cfg) => {
-                fieldsMetadata.current[selector] = cfg ?? {};
-            };
-
-            return binderFactory(
-                entityState,
-                validationErrors,
-                adapter,
-                fieldChangeHandler,
-                keepTheMetadata,
-            );
-        }, [
-            adapter,
-            entityState,
-            fieldChangeHandler,
-            validationErrors,
-        ],
-    );
-
     const validate = useCallback(
-        (selector: keyof Entity | 'all' | 'touched', justTest = true) => {
+        (selector: keyof Entity | 'all' | 'touched', justTest = false) => {
             if (selector === 'all' || selector === 'touched') {
                 const fieldsToValidate = getFieldsToValidate(
                     fieldsMetadata.current,
+                    // fieldsMetadata,
                     entity.value,
                     selector === 'all',
                 );
@@ -301,7 +281,32 @@ function useSmolForms<
                 justTest,
             );
         },
-        [entity, internalValidate],
+        [entity, fieldsMetadata, internalValidate],
+    );
+
+    const bind = useMemo<Bind<Entity, FieldBoundProps>>(
+        () => {
+            const keepTheMetadata: OnBindingCallback<Entity> = (selector, cfg) => {
+                fieldsMetadata.current[selector] = cfg ?? {};
+            };
+
+            const blurHandle = () => {
+                if (!lastEventRef.current) { return; }
+
+                const { selector } = lastEventRef.current;
+
+                validate(selector);
+            };
+
+            return binderFactory(
+                entity,
+                validationErrors,
+                adapter,
+                fieldChangeHandler,
+                blurHandle,
+                keepTheMetadata,
+            );
+        }, [adapter, entity, fieldChangeHandler, validate, validationErrors],
     );
 
     return {

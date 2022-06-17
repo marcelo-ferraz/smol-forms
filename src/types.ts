@@ -70,6 +70,7 @@ export interface Bind<
 
 export type MinPropsToBind = {
     onChange: Runnable,
+    onBlur: () => void,
     'data-key': string | number | symbol,
     value: never,
 };
@@ -77,6 +78,7 @@ export type MinPropsToBind = {
 export type BindArgs<Entity> = {
     selector: keyof Entity,
     fieldChangeHandler: SmolInputChangeHandler<Entity>,
+    fieldBlurHandler: () => void,
     cfg: MoreGenericConfigForBind<Entity>,
     validationErrors: UnbeknownstValues<Entity>,
     entity: DisplayNValue<Entity>,

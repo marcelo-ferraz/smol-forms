@@ -26,6 +26,7 @@ const defaultAdapter = <Entity>({
     cfg,
     entity,
     selector,
+    fieldBlurHandler,
     fieldChangeHandler,
 }: BindArgs<Entity>) : MinPropsToBind => {
     const defaultValue = (
@@ -44,6 +45,7 @@ const defaultAdapter = <Entity>({
     return {
         'data-key': selector,
         onChange: (ev: SmolChangeEvent) => fieldChangeHandler(ev, selector, cfg),
+        onBlur: fieldBlurHandler,
         value,
     };
 };

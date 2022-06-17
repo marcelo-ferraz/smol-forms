@@ -55,9 +55,8 @@ export type TestEntity = Partial<{
     emptyValue: unknown,
 }>;
 
-export const curryChange = (
+export const changeFromBind = (
     boundProps: MuiBindProps<TestEntity>,
-) => (
     value: string,
 ) => act(
     () => {
@@ -69,17 +68,38 @@ export const curryChange = (
     },
 );
 
-export const fireChange = (
-    element: Parameters<FireObject['change']>[0],
-    options: Parameters<FireObject['change']>[1],
+export const blurFromBind = (
+    boundProps: MuiBindProps<TestEntity>,
 ) => act(
     () => {
-        fireEvent.change(element, options);
-
-        jest.advanceTimersByTime(500);
-        jest.runAllTimers();
+        boundProps.onBlur();
     },
 );
+
+export const trigger = {
+    change: (
+        element: Parameters<FireObject['change']>[0],
+        options: Parameters<FireObject['change']>[1],
+    ) => act(
+        () => {
+            fireEvent.change(element, options);
+
+            jest.advanceTimersByTime(500);
+            jest.runAllTimers();
+        },
+    ),
+    blur: (
+        element: Parameters<FireObject['blur']>[0],
+        options: Parameters<FireObject['blur']>[1],
+    ) => act(
+        () => {
+            fireEvent.blur(element, options);
+
+            jest.advanceTimersByTime(500);
+            jest.runAllTimers();
+        },
+    ),
+};
 
 export const getDisplayNValue = (
     key: keyof TestEntity,
