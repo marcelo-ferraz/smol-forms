@@ -299,14 +299,14 @@ function useSmolForms<
             };
 
             return binderFactory(
-                entity,
+                entityState,
                 validationErrors,
                 adapter,
                 fieldChangeHandler,
                 blurHandle,
                 keepTheMetadata,
             );
-        }, [adapter, entity, fieldChangeHandler, validate, validationErrors],
+        }, [adapter, entityState, fieldChangeHandler, validate, validationErrors],
     );
 
     return {
