@@ -146,7 +146,7 @@ export type FormHookResult<
     bind: Bind<Entity, FieldBoundProps>;
     emitFieldChange: SmolInputChangeHandler<Entity>;
     entity: Partial<Entity>;
-    validate(selector: keyof Entity | 'all' | 'touched'): boolean,
+    validate(selector: keyof Entity | 'all' | 'touched', justTest?: boolean): boolean,
     errors: ValidationErrors<Entity>;
     setErrors: Dispatch<SetStateAction<ValidationErrors<Entity>>>;
 }
