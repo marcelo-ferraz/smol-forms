@@ -17,7 +17,7 @@ import {
 
 function binderFactory<
     Entity,
-    FieldBoundProps extends MinPropsToBind<Entity>
+    FieldBoundProps extends MinPropsToBind
 >(
     entity: DisplayNValue<Entity>,
     validationErrors: ValidationErrors<Entity>,

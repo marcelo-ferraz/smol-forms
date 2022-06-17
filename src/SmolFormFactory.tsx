@@ -4,7 +4,7 @@ import { SmolFormFactoryProps, MinPropsToBind } from './types';
 
 export default function SmolFormFactory<
     Entity,
-    R extends MinPropsToBind<Entity>,
+    R extends MinPropsToBind,
 >({
     entity,
     errors,

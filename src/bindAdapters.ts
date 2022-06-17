@@ -27,7 +27,7 @@ const defaultAdapter = <Entity>({
     entity,
     selector,
     fieldChangeHandler,
-}: BindArgs<Entity>) : MinPropsToBind<Entity> => {
+}: BindArgs<Entity>) : MinPropsToBind => {
     const defaultValue = (
         // if config is provided and defaultValue is provided including null
         !!cfg && cfg.defaultValue !== undefined

@@ -53,7 +53,7 @@ const getFieldsToValidate = <Entity, >(
 
 function useSmolForms<
     Entity,
-    FieldBoundProps extends MinPropsToBind<Entity> = MuiBindProps<Entity>
+    FieldBoundProps extends MinPropsToBind = MuiBindProps<Entity>
 >({
     initial = {},
     onValidationError,
@@ -170,6 +170,7 @@ function useSmolForms<
         (
             selectorsNvalues: [keyof Entity, unknown][],
             ent: DisplayNValue<Entity>,
+            justTest = false,
         ) => {
             if (!lastEventRef.current) { return null; }
 
@@ -196,13 +197,14 @@ function useSmolForms<
                 }, {},
             );
 
-            setValidationErrors(
-                (prevErrors) => ({
-                    ...prevErrors,
-                    ...newErrors,
-                }),
-            );
-
+            if (!justTest) {
+                setValidationErrors(
+                    (prevErrors) => ({
+                        ...prevErrors,
+                        ...newErrors,
+                    }),
+                );
+            }
             return !Object
                 .values(newErrors)
                 .some((err: string[]) => !!err?.length);
@@ -282,7 +284,7 @@ function useSmolForms<
     );
 
     const validate = useCallback(
-        (selector: keyof Entity | 'all' | 'touched') => {
+        (selector: keyof Entity | 'all' | 'touched', justTest = true) => {
             if (selector === 'all' || selector === 'touched') {
                 const fieldsToValidate = getFieldsToValidate(
                     fieldsMetadata.current,
@@ -290,12 +292,13 @@ function useSmolForms<
                     selector === 'all',
                 );
 
-                return internalValidate(fieldsToValidate, entity);
+                return internalValidate(fieldsToValidate, entity, justTest);
             }
 
             return internalValidate(
                 [[selector, entity.value[selector]]],
                 entity,
+                justTest,
             );
         },
         [entity, internalValidate],

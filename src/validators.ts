@@ -14,47 +14,47 @@ export const DEFAULT_FLOAT_MSG = 'This field should be a decimal';
 export const DEFAULT_GENERIC_MSG = 'This field is incorrect';
 export const DEFAULT_EMAIL_MSG = 'This field is an email';
 
-export const isRequired = (
-    { value }: ValidatorArgs,
+export const isRequired = <T>(
+    { value }: ValidatorArgs<T>,
     msg = DEFAULT_REQUIRED_MSG,
 ) => (
-    !(value as unknown)?.toString().trim() ? msg : null
-);
+        !(value as unknown)?.toString().trim() ? msg : null
+    );
 
-export const isInt = (
-    { value }: ValidatorArgs,
+export const isInt = <T>(
+    { value }: ValidatorArgs<T>,
     msg = DEFAULT_INT_MSG,
 ) => (
-    !regexes.isInt.test(
-        (value as unknown)?.toString().trim() ?? '',
-    ) ? msg : null
-);
+        !regexes.isInt.test(
+            (value as unknown)?.toString().trim() ?? '',
+        ) ? msg : null
+    );
 
-export const isFloat = (decimal = 2) => (
-    { value }: ValidatorArgs,
+export const isFloat = (decimal = 2) => <T>(
+    { value }: ValidatorArgs<T>,
     msg = DEFAULT_FLOAT_MSG,
 ) => (
-    !regexes.isFloat(decimal).test(
-        (value as unknown)?.toString().trim() ?? '',
-    ) ? msg : null
-);
+        !regexes.isFloat(decimal).test(
+            (value as unknown)?.toString().trim() ?? '',
+        ) ? msg : null
+    );
 
 export const pattern = (
     regex: RegExp,
-) => (
-    { value }: ValidatorArgs,
+) => <T>(
+    { value }: ValidatorArgs<T>,
     msg = DEFAULT_GENERIC_MSG,
 ) => (
-    !new RegExp(regex).test(
-        (value as unknown)?.toString().trim() ?? '',
-    ) ? msg : null
-);
+        !new RegExp(regex).test(
+            (value as unknown)?.toString().trim() ?? '',
+        ) ? msg : null
+    );
 
-export const isEmail = (
-    { value }: ValidatorArgs,
+export const isEmail = <T>(
+    { value }: ValidatorArgs<T>,
     msg = DEFAULT_EMAIL_MSG,
 ) => (
-    !regexes.isEmail.test(
-        (value as unknown)?.toString().trim() ?? '',
-    ) ? msg : null
-);
+        !regexes.isEmail.test(
+            (value as unknown)?.toString().trim() ?? '',
+        ) ? msg : null
+    );
