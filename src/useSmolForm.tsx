@@ -262,7 +262,7 @@ function useSmolForms<
         };
     }, [changeCallback, debouncedEntity]);
 
-    const validate = useCallback(
+    const validate = useCallback<FormHookResult<Entity, FieldBoundProps>['validate']>(
         (selector: keyof Entity | 'all' | 'touched', justTest = false) => {
             if (selector === 'all' || selector === 'touched') {
                 const fieldsToValidate = getFieldsToValidate(
