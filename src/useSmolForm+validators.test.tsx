@@ -147,6 +147,8 @@ describe('integration: useSmolForm hook + validators', () => {
             blurFromBind(
                 result.current.bind({ [selector]: validators }),
             );
+
+            jest.advanceTimersByTime(500);
         }
 
         const error = result.current.errors[selector];
@@ -154,7 +156,7 @@ describe('integration: useSmolForm hook + validators', () => {
         expect(error).toStrictEqual(expectedError);
     });
 
-    it('should be called with the value, the entity and the selector', () => {
+    it('should save the state and render the errors on the helper text', () => {
         const { result } = renderHook(() => useSmolForm<TestEntity>({
             adapter: muiAdapter,
         }));
@@ -176,10 +178,10 @@ describe('integration: useSmolForm hook + validators', () => {
             result.current.bind({ [selector]: [validator] }),
         );
 
-        const errorFromState = result.current.errors.strValue[0];
-        const { helperText } = result.current.bind.int(bindInput);
+        const errorFromState = result.current.errors.strValue;
+        const { helperText } = result.current.bind(bindInput);
 
-        expect(errorFromState).toBe(expectedValue);
+        expect(errorFromState).toStrictEqual([expectedValue]);
         expect(helperText).toStrictEqual([expectedValue]);
     });
 });

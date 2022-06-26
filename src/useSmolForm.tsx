@@ -170,7 +170,7 @@ function useSmolForms<
             ent: DisplayNValue<Entity>,
             justTest = false,
         ) => {
-            let isValid = true;
+            let isValid: boolean = null;
 
             const newErrors = selectorsNvalues.reduce(
                 (errs, [selector, value]) => {
@@ -189,8 +189,8 @@ function useSmolForms<
                         },
                     );
 
-                    if (isValid) {
-                        isValid = !itemErrors?.length;
+                    if (itemErrors?.length) {
+                        isValid = false;
                     }
 
                     return {

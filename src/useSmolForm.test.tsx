@@ -1,5 +1,6 @@
 import { renderHook } from '@testing-library/react-hooks';
 import { randomInt } from 'crypto';
+import { act } from 'react-dom/test-utils';
 import useSmolForm from './useSmolForm';
 import { DEFAULT_VALUE, muiAdapter } from './bindAdapters';
 import {
@@ -361,7 +362,7 @@ describe('hook: useSmolForm', () => {
             });
         });
 
-        it('should be called with the value, the entity and the selector', () => {
+        it('should save the state and render the errors on the helper text', () => {
             const { result } = renderHook(() => useSmolForm<TestEntity>({
                 adapter: muiAdapter,
             }));
@@ -386,6 +387,25 @@ describe('hook: useSmolForm', () => {
 
             expect(errorFromState).toBe(expectedValue);
             expect(helperText).toStrictEqual([expectedValue]);
+        });
+
+        describe('validate func', () => {
+            it('should return null if the property doesn\'t have a validator', () => {
+                const { result } = renderHook(() => useSmolForm<TestEntity>({
+                    adapter: muiAdapter,
+                }));
+                const selector = 'strValue';
+
+                result.current.bind(selector);
+
+                let isValid;
+
+                act(() => {
+                    isValid = result.current.validate(selector);
+                });
+
+                expect(isValid).toBe(null);
+            });
         });
     });
 

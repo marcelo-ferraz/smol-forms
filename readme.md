@@ -35,22 +35,22 @@ Stay tuned for more.
 ### Simplest use that I can think of with the component
 ```ts
   // ... save implementation
-  return (<SmolForm<EntityType>
-	  form={({ bind, entity }) => (
-		  <>
-			  <label  for="fname">Name:</label><br/>
-			  <input  type="text"  name="fname" {...bind('name')} />
-			  <br/>
-			  <label  for="age">Name:</label><br/>
-			  <input  type="text" name="age" {...bind.int('age')} />
-			  <br/>
-			  <label  for="mmail">Last  name:</label><br>
-			  <input  type="text"  name="mmail" {...bind({mainEmail: [isEmail]})} />
-			  <br/>
-			  <button  onClick={() => save(entity)} />
-		  </>
-	  )}
-	/>);
+return (<SmolForm<EntityType>
+	form={({ bind, entity }) => (
+		<>
+			<label  for="fname">Name:</label><br/>
+			<input  type="text"  name="fname" {...bind('name')} />
+			<br/>
+			<label  for="age">Name:</label><br/>
+			<input  type="text" name="age" {...bind.int('age')} />
+			<br/>
+			<label  for="mmail">Last  name:</label><br>
+			<input  type="text"  name="mmail" {...bind({mainEmail: [isEmail]})} />
+			<br/>
+			<button  onClick={() => save(entity)} />
+		</>
+	)}
+/>);
 ```
 
 ## The API
@@ -80,12 +80,68 @@ This hook is the central point of the lib. It concerns itself with entity `valid
 | setErrors       | ``Dispatch<SetStateAction<ValidationErrors<T>>>``                               | A dispatch to set errors yourself.                                                                                                                |
 
 ## The Validation bit
-The validation here is to support validation functions. The lib comes with some validations, please check it [here](#built-in-validators).    
+The goal is to support validation functions. The lib does comes with some default validators, please check it [here](#built-in-validators).    
 There are four different parts to interact with:
 ### The `validate` function
-Is returned from the hook
+Is returned from the hook, or the reference from the component, and it can trigger a state change saving the validation result, or just return the result (is valid or not).
+
+It can be used to test a single property by the name, `all` properties from the entity or only the `touched` ones.
+```ts
+// validating only the touched and updating the state
+const allDirtyAreValid = validate('touched');
+
+// testing if all fields are valid
+const testAllFields = validate('all', true);
+
+// testing only the property 'age' is valid
+const testAllFields = validate('age', true);
+```
+
+> Is important to note that the validate function won't throw an exception if the field doesn't have a validator or is bound to a field.     
+> Meaning if there are no validators bound to the property, it just returns `null`, because nothing was done.
 
 ## The validation state 
+The validation state is just a dictionary with the same fields but arrays of strings with the description of the error found.
+
+<table>
+	<tr>
+		<td> The object </td>
+		<td> The error map </td>
+	</tr>
+	<tr>
+		<td>
+
+```ts
+	const entity = {
+		id: 22,
+		name: 'joe'
+	}
+```
+    
+    
+		</td>
+		<td>
+
+
+```ts
+// will have a map, if they are invalid:
+const entity = {
+	id: [ 
+		'This field is required!',
+		'This field is a number!'
+	],
+	name: [ 'this field is required' ],
+}
+```
+
+
+		</td>
+	</tr>
+</table>
+
+|
+
+|
 
 ## The validation state change callback
 
