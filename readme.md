@@ -58,6 +58,7 @@ There are two main ways to use `smol-forms`, the hook (**useSmolForm**) or the c
 I chose to provide those two endpoints, so you can use what feels more confortable to you.
 Their core is the same, which is actually the hook, so there are no surprises when using it. Chose whatever you like and be happy.
 ### The useSmolForm hook
+This hook is the central point of the lib. It concerns itself with entity `validation`, entity `binding` and the entity `value`.
 
 ### Props
 | Property          | Type                                        | Default          | Description                                                                                                                                                             |
@@ -78,3 +79,22 @@ Their core is the same, which is actually the hook, so there are no surprises wh
 | errors          | ``ValidationErrors<T>``                                                         | The validation errors. Its a key and `string[]` dictionary.                                                                                       |
 | setErrors       | ``Dispatch<SetStateAction<ValidationErrors<T>>>``                               | A dispatch to set errors yourself.                                                                                                                |
 
+## The Validation bit
+The validation here is to support validation functions. The lib comes with some validations, please check it [here](#built-in-validators).    
+There are four different parts to interact with:
+### The `validate` function
+Is returned from the hook
+
+## The validation state 
+
+## The validation state change callback
+
+  - a callback for the change event of those validation error 
+ - debouncing
+  - the entity value
+  - the change event
+ - binding
+  -   
+   
+## Built-in validators
+<em>under construction</em>
