@@ -106,25 +106,24 @@ The validation state is just a dictionary with the same fields but arrays of str
 <table>
 	<tr>
 		<td> The object </td>
-		<td> The error map </td>
+		<td> The possible error map </td>
 	</tr>
 	<tr>
 		<td>
 
-```ts
-	const entity = {
-		id: 22,
-		name: 'joe'
-	}
-```
-    
-    
-		</td>
-		<td>
+		```ts
+			const entity = {
+				id: 22,
+				name: 'joe'
+			}
+		```
+			
+			
+</td>
+<td>
 
 
 ```ts
-// will have a map, if they are invalid:
 const entity = {
 	id: [ 
 		'This field is required!',
@@ -135,13 +134,10 @@ const entity = {
 ```
 
 
-		</td>
-	</tr>
+</td>
+</tr>
 </table>
 
-|
-
-|
 
 ## The validation state change callback
 
