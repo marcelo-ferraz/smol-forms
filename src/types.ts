@@ -227,3 +227,7 @@ export type DisplayNValue<Entity> = {
 
 export type NumberArgs = { min?: number, max?: number };
 export type IntArgs = NumberArgs & { radix?:number };
+
+export type FieldsMetadata<Entity> = Partial<{
+    [key in keyof Entity]: MoreGenericConfigForBind<Entity> & { touched?: boolean};
+}>;

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import {
     BindingInput,
+    FieldsMetadata,
     MoreGenericConfigForBind,
     Runnable,
     Validator,
@@ -72,3 +73,19 @@ export function useDebounce<T>(value: T, delay = 300): T {
 
     return debouncedValue;
 }
+
+export const getFieldsToValidate = <Entity, >(
+    fieldsMetadata: FieldsMetadata<Entity>,
+    entity: Partial<Entity>,
+    validateAll = false,
+) => {
+    if (!fieldsMetadata) { return []; }
+
+    return Object
+        .entries(fieldsMetadata)
+        .filter(([, value]) => validateAll || (value as { touched?: boolean}).touched)
+        .map<[keyof Entity, unknown]>(([selector]) => [
+            selector as keyof Entity,
+            entity[selector as keyof Entity],
+        ]);
+};

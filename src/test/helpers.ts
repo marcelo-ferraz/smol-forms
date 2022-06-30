@@ -1,7 +1,11 @@
 /* eslint-disable no-bitwise */
 import { FireObject, fireEvent } from '@testing-library/react';
 import { act } from 'react-dom/test-utils';
-import { FormHookResult, MuiBindProps } from 'src/types';
+import { FormHookResult, MuiBindProps } from '../types';
+import { DEFAULT_INPUT_DELAY } from '../useSmolForm';
+
+const DELAY_PADDING = DEFAULT_INPUT_DELAY * 0.3;
+export const DELAY_PLUS_PADDING = DEFAULT_INPUT_DELAY + DELAY_PADDING;
 
 export const GenFlags = {
     all: 0,
@@ -63,7 +67,7 @@ export const changeFromBind = (
         boundProps.onChange({
             target: { value },
         });
-        jest.advanceTimersByTime(500);
+        jest.advanceTimersByTime(DELAY_PLUS_PADDING);
         jest.runAllTimers();
     },
 );
@@ -73,6 +77,8 @@ export const blurFromBind = (
 ) => act(
     () => {
         boundProps.onBlur();
+        jest.advanceTimersByTime(DELAY_PLUS_PADDING);
+        jest.runAllTimers();
     },
 );
 
@@ -84,7 +90,7 @@ export const trigger = {
         () => {
             fireEvent.change(element, options);
 
-            jest.advanceTimersByTime(500);
+            jest.advanceTimersByTime(DELAY_PLUS_PADDING);
             jest.runAllTimers();
         },
     ),
@@ -95,7 +101,7 @@ export const trigger = {
         () => {
             fireEvent.blur(element, options);
 
-            jest.advanceTimersByTime(500);
+            jest.advanceTimersByTime(DELAY_PLUS_PADDING);
             jest.runAllTimers();
         },
     ),

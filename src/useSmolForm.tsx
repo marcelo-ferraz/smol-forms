@@ -8,7 +8,7 @@ import {
 
 import binderFactory from './binderFactory';
 
-import { runOrReduce, useDebounce as useDebouncedValue } from './helpers';
+import { getFieldsToValidate, runOrReduce, useDebounce as useDebouncedValue } from './helpers';
 import {
     FormHookProps,
     FormHookResult,
@@ -19,8 +19,8 @@ import {
     Bind,
     DisplayNValue,
     SmolChangeCallbackArgs,
-    MoreGenericConfigForBind,
     OnBindingCallback,
+    FieldsMetadata,
 } from './types';
 
 // I could just have the spread, but it wouldnt copy nested objs
@@ -31,25 +31,7 @@ type ChangeArgs<Entity> = Omit<
     'entityDisplay' | 'entity'
 >;
 
-type FieldsMetadata<Entity> = Partial<{
-    [key in keyof Entity]: MoreGenericConfigForBind<Entity> & { touched?: boolean};
-}>;
-
-const getFieldsToValidate = <Entity, >(
-    fieldsMetadata: FieldsMetadata<Entity>,
-    entity: Partial<Entity>,
-    validateAll = false,
-) => {
-    if (!fieldsMetadata) { return []; }
-
-    return Object
-        .entries(fieldsMetadata)
-        .filter(([, value]) => validateAll || (value as { touched?: boolean}).touched)
-        .map<[keyof Entity, unknown]>(([selector]) => [
-            selector as keyof Entity,
-            entity[selector as keyof Entity],
-        ]);
-};
+export const DEFAULT_INPUT_DELAY = 100;
 
 function useSmolForms<
     Entity,
@@ -59,7 +41,7 @@ function useSmolForms<
     onValidationError,
     adapter,
     onChange: changeCallback,
-    delay = 300,
+    delay = DEFAULT_INPUT_DELAY,
 }: Partial<FormHookProps<Entity, FieldBoundProps>> = {})
 : FormHookResult<Entity, FieldBoundProps> {
     const fieldsMetadata = useRef<FieldsMetadata<Entity>>({});
@@ -295,7 +277,11 @@ function useSmolForms<
 
                 const { selector } = lastEventRef.current;
 
-                validate(selector);
+                // given the delay with the debouncing,
+                // and if the user is fast enough,
+                // validate was checking a model before the final result.
+                // this will queue the check asynchronously the model after the debouncing is done
+                setTimeout(() => validate(selector), delay);
             };
 
             return binderFactory(
@@ -306,7 +292,7 @@ function useSmolForms<
                 blurHandle,
                 keepTheMetadata,
             );
-        }, [adapter, entityState, fieldChangeHandler, validate, validationErrors],
+        }, [adapter, delay, entityState, fieldChangeHandler, validate, validationErrors],
     );
 
     return {

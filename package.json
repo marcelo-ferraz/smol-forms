@@ -10,6 +10,7 @@
     "analyze-build-prod": "webpack --mode=production --progress --color --env=analyze=true",
     "lint": "eslint ./src --fix",
     "test": "jest ./src",
+    "test-silent": "jest --silent",
     "test-watch": "jest ./src --maxWorkers=1 --watch",
     "test-only-new": "jest -o -u"
   },

@@ -3,7 +3,7 @@ import { randomInt } from 'crypto';
 import cases from 'jest-in-case';
 import { muiAdapter } from './bindAdapters';
 import {
-    changeFromBind, blurFromBind, generateChars, generateFloat, generateInt, TestEntity, trigger,
+    changeFromBind, blurFromBind, generateChars, generateFloat, generateInt, TestEntity, trigger, DELAY_PLUS_PADDING,
 } from './test/helpers';
 import { Validator } from './types';
 import useSmolForm from './useSmolForm';
@@ -116,6 +116,7 @@ describe('integration: useSmolForm hook + validators', () => {
             blurFromBind(
                 result.current.bind({ [selector]: [validator] }),
             );
+            jest.advanceTimersByTime(DELAY_PLUS_PADDING);
         }
 
         const error = result.current.errors[selector];

@@ -288,7 +288,7 @@ describe('hook: useSmolForm', () => {
                     result.current.bind({ [selector]: [validator1, validator2] }),
                     '2',
                 );
-
+debugger;
                 blurFromBind(
                     result.current.bind.int({ [selector]: [validator1, validator2] }),
                 );
