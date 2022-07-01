@@ -281,7 +281,7 @@ function useSmolForms<
                 // and if the user is fast enough,
                 // validate was checking a model before the final result.
                 // this will queue the check asynchronously the model after the debouncing is done
-                setTimeout(() => validate(selector), delay);
+                setTimeout(() => validate(selector), delay * 1.02);
             };
 
             return binderFactory(
