@@ -4,9 +4,9 @@
 
   
 
-HTML form elements work a bit differently from other DOM elements in React because form elements naturally keep some internal state. This small library has the goal of simplifying the binding of DOM, or non-DOM elements to a state, while trying to provide clean and simple usage.
+HTML form elements work a bit differently from other DOM elements in React because form elements naturally keep some internal state. This small library has the goal of simplifying the binding of DOM, or non-DOM elements to a state while trying to provide clean and simple usage.
 
-There are amazing frameworks that that deal really well with this problem. This is just my try.
+There are amazing frameworks that deal with these problems very well. This is just my try.
 
 **Under construction...**
 
@@ -61,11 +61,11 @@ return (<SmolForm<EntityType>
 ```
 
 ## The API
-There are two main ways to use `smol-forms`, the hook (**useSmolForm**) or the component (**SmolForm<T>**). Both have the similar signatures (the component contains some visual aspects and a ref to the current instance of the engine).
+There are two main ways to use `smol-forms`, the hook (**useSmolForm**) or the component (**SmolForm<T>**). Both have similar signatures (the component contains some visual aspects and a ref to the current instance of the engine).
 I chose to provide those two endpoints, so you can use what feels more comfortable to you.
-Their core is the same, which is actually the hook, so there are no surprises when using it. Chose whatever you like and be happy.
+The API core is the hook, so there are no surprises when using it. Choose whatever you like and be happy.
 ### The useSmolForm hook
-This hook is the central point of the lib. It concerns itself with entity `validation`, entity `binding` and the entity `value`.
+This hook is the central point of the lib. It concerns itself with entity `validation`, entity `binding`, and the entity `value`.
 
 ### Props
 | Property          | Type                                        | Default          | Description                                                                                                                                                             |
@@ -74,21 +74,21 @@ This hook is the central point of the lib. It concerns itself with entity `valid
 | delay             | `number`                                    | `300`            | the delay used by the debouncing function.                                                                                                                              |
 | onChange          | `SmolChangeCallback<T>`                     | `null`           | A callback for any changes made. This is debounced and is affected by the value of _**`delay`**_.                                                                       |
 | onValidationError | ``(errors:  ValidationErrors<T>) =>  void`` | `null`           | A callback for when an validation error is detected                                                                                                                     |
-| adapter           | `BindAdapter<T, P>`                         | `defaultAdapter` | An Anti-Corruption Layer, the interactions between the field and engine are dealt here. It has a minimum interface, but can be heavily customized for more, refer here |
+| adapter           | `BindAdapter<T, P>`                         | `defaultAdapter` | An Anti-Corruption Layer, the interactions between the field and engine are dealt with here. It has a minimal interface, but can be heavily customized for more, refer here |
 
 #### Return
 | Property        | Type                                                                            | Description                                                                                                                                       |
 | --------------- | ------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
 | bind            | `Bind<T, P>`                                                                    | The `bind` function used for hmm..., "binding" the field to a given property, for more info, and how to adapt its behavior, please check it here |
-| emitFieldChange | ``SmolInputChangeHandler<T>``                                                   | The change handler, you can use it at anytime, more info here                                                                                     |
+| emitFieldChange | ``SmolInputChangeHandler<T>``                                                   | The change handler, you can use it at any time, more info here                                                                                     |
 | entity          | `object`                                                                        | The debounced value of the entity                                                                                                                 |
 | validate        | ``(selector: keyof  Entity\|'all'\|'touched', justTest?: boolean) =>  boolean`` | The validation function. It accepts ``'all'``, ``'touched'`` or any property name from the entity.                                                |
-| errors          | ``ValidationErrors<T>``                                                         | The validation errors. Its a key and `string[]` dictionary.                                                                                       |
+| errors          | ``ValidationErrors<T>``                                                         | The validation errors. It's a key and `string[]` dictionary.                                                                                       |
 | setErrors       | ``Dispatch<SetStateAction<ValidationErrors<T>>>``                               | A dispatch to set errors yourself.                                                                                                                |
 
 ## The state bit
 ### The debounced entity state
-This is to ensure that neither time-consuming tasks or callbacks are fired too often. As much of the framework is about state synchronization, a lack of control here can create race conditions.
+This ensures that neither time-consuming tasks nor callbacks are fired too often. As much of the framework is about state synchronization, a lack of control here can create race conditions.
 The default delay is _`100ms`_.
 
 ### The state change callback `onChange`
@@ -99,7 +99,7 @@ The type, `(args: SmolChangeCallbackArgs<Entity>) => void`.
 | Property          | Type                               | Description                                                                                 |
 | ----------------- | ---------------------------------- | ------------------------------------------------------------------------------------------- |
 | event             | `SmolChangeEvent`                  | Is the event that triggered the last change                                                 |
-| value             | `any`                              | The value for that change, it can be overridden by configuration, by the `eventMap` function |
+| value             | `any`                              | The value for that change, can be overridden by configuration, by the `eventMap` function |
 | selector          | `keyof Entity`                     | the property that was modified on this event                                                |
 | cfg               | `MoreGenericConfigForBind<Entity>` | the configuration bound to the field                                                        |
 | entity            | `Partial<Entity>`                  | the current state of the entity                                                             |
@@ -108,12 +108,12 @@ The type, `(args: SmolChangeCallbackArgs<Entity>) => void`.
 | prevEntityDisplay | `Partial<Entity>`                  | the current state of the entity fields display data                                         |
 
 ## The Validation bit
-The goal is to support validation functions. The lib does comes with some default validators, please check it [here](#built-in-validators).    
+The goal is to support validation functions. The lib does come with some default validators, please check it [here](#built-in-validators).    
 There are four different parts to interact with:
 ### The `validate` function
 Is returned from the hook, or the reference from the component, and it can trigger a state change saving the validation result, or just return the result (is valid or not).
 
-It can be used to test a single property by the name, `all` properties from the entity or only the `touched` ones.
+It can be used to test a single property by the name, `all` properties from the entity, or only the `touched` ones.
 ```ts
 // validating only the touched and updating the state
 const allDirtyAreValid = validate('touched');
@@ -125,27 +125,27 @@ const testAllFields = validate('all', true);
 const testAllFields = validate('age', true);
 ```
 
-> Is important to note that the validate function won't throw an exception if the field doesn't have a validator or is bound to a field.     
+> Please note that the validate function won't throw an exception if the field doesn't have a validator or is bound to a field.     
 > Meaning if there are no validators bound to the property, it just returns `null`, because nothing was done.
 
 ### The validation state 
-The validation state is just a dictionary with the same fields but arrays of strings with the description of the error found.
+The state validation is just a dictionary with the same fields but arrays of strings with the description of the error found.
 
 I reckon that a visual representation speaks volumes:
 <table>
-	<tr>
-		<td> The object </td>
-		<td> What the error map could look like</td>
-	</tr>
-	<tr>
-		<td>
+    <tr>
+        <td> The object </td>
+        <td> What the error map could look like</td>
+    </tr>
+    <tr>
+        <td>
 
 ```js
 {
   id: 22,
   name: 'joe'
 }
-```		
+```     
 </td>
 <td>
 
@@ -169,7 +169,7 @@ The type is a `(errors: ValidationErrors<Entity>) => void`, where `errors` is th
 
 It will be triggered whenever the `validation` function is called.
 
-> If triggered by the **_onBlur_** event, the validation will be queued to be executed after the debounced delay, and that will trigger this callback afterwards
+> If triggered by the **_onBlur_** event, the validation will be queued to be executed after the debounced delay, and that will trigger this callback afterward.
 
    
 ## Built-in validators
