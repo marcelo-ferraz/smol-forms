@@ -21,36 +21,42 @@ Stay tuned for more.
   const { bind, entity } =  useSmolForm<EntityType>();
   // ... save implementation
   return (<>
-	  <label  for="fname">Name:</label><br/>
-	  <input  type="text"  name="fname" {...bind('name')} />
-	  <br/>
-	  <label  for="age">Name:</label><br/>
-	  <input  type="text" name="age" {...bind.int('age')} />
-	  <br/>
-	  <label  for="mmail">Last  name:</label><br>
-	  <input  type="text"  name="mmail" {...bind({mainEmail: [isEmail]})} />
-	  <br/>
-	  <button  onClick={() => save(entity)} />
+    <label for="fname">Name:</label>
+    <br/>
+    <input type="text"  name="fname" {...bind('name')} />
+    <br/>
+    <label for="age">Name:</label>
+    <br/>
+    <input type="text" name="age" {...bind.int('age')} />
+    <br/>
+    <label for="mmail">Last  name:</label>
+    <br/>
+    <input type="text"  name="mmail" {...bind({mainEmail: [isEmail]})} />
+    <br/>
+    <button onClick={() => save(entity)} />
   </>);
 ```
 ### Simplest use that I can think of with the component
 ```ts
-  // ... save implementation
+// ... save implementation
 return (<SmolForm<EntityType>
-	form={({ bind, entity }) => (
-		<>
-			<label  for="fname">Name:</label><br/>
-			<input  type="text"  name="fname" {...bind('name')} />
-			<br/>
-			<label  for="age">Name:</label><br/>
-			<input  type="text" name="age" {...bind.int('age')} />
-			<br/>
-			<label  for="mmail">Last  name:</label><br>
-			<input  type="text"  name="mmail" {...bind({mainEmail: [isEmail]})} />
-			<br/>
-			<button  onClick={() => save(entity)} />
-		</>
-	)}
+  form={({ bind, entity }) => (
+    <>
+      <label for="fname">Name:</label>
+      <br/>
+      <input type="text"  name="fname" {...bind('name')} />
+      <br/>
+      <label for="age">Name:</label>
+      <br/>
+      <input type="text" name="age" {...bind.int('age')} />
+      <br/>
+      <label for="mmail">Last  name:</label>
+      <br/>
+      <input type="text"  name="mmail" {...bind({mainEmail: [isEmail]})} />
+      <br/>
+      <button  onClick={() => save(entity)} />
+    </>
+  )}
 />);
 ```
 
