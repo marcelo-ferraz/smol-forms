@@ -1,4 +1,5 @@
 
+
 # Welcome to smol-forms
 
   
@@ -54,8 +55,8 @@ return (<SmolForm<EntityType>
 ```
 
 ## The API
-There are two main ways to use `smol-forms`, the hook (**useSmolForm**) or the component (**SmolForm<T>**). Both have the same-ish signature (the component contains some visual aspects and a ref to the current instance of the engine).
-I chose to provide those two endpoints, so you can use what feels more confortable to you.
+There are two main ways to use `smol-forms`, the hook (**useSmolForm**) or the component (**SmolForm<T>**). Both have the similar signatures (the component contains some visual aspects and a ref to the current instance of the engine).
+I chose to provide those two endpoints, so you can use what feels more comfortable to you.
 Their core is the same, which is actually the hook, so there are no surprises when using it. Chose whatever you like and be happy.
 ### The useSmolForm hook
 This hook is the central point of the lib. It concerns itself with entity `validation`, entity `binding` and the entity `value`.
@@ -67,12 +68,12 @@ This hook is the central point of the lib. It concerns itself with entity `valid
 | delay             | `number`                                    | `300`            | the delay used by the debouncing function.                                                                                                                              |
 | onChange          | `SmolChangeCallback<T>`                     | `null`           | A callback for any changes made. This is debounced and is affected by the value of _**`delay`**_.                                                                       |
 | onValidationError | ``(errors:  ValidationErrors<T>) =>  void`` | `null`           | A callback for when an validation error is detected                                                                                                                     |
-| adapter           | `BindAdapter<T, P>`                         | `defaultAdapter` | An Anti-Corruption Layer, the interactions between the field and engine are dealt here. It has a minimum interface, but can be heavily customized for more, refere here |
+| adapter           | `BindAdapter<T, P>`                         | `defaultAdapter` | An Anti-Corruption Layer, the interactions between the field and engine are dealt here. It has a minimum interface, but can be heavily customized for more, refer here |
 
 #### Return
 | Property        | Type                                                                            | Description                                                                                                                                       |
 | --------------- | ------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
-| bind            | `Bind<T, P>`                                                                    | The `bind` function used for hmm..., "binding" the field to a given property, for more info, and how to adapt its behaviour, please check it here |
+| bind            | `Bind<T, P>`                                                                    | The `bind` function used for hmm..., "binding" the field to a given property, for more info, and how to adapt its behavior, please check it here |
 | emitFieldChange | ``SmolInputChangeHandler<T>``                                                   | The change handler, you can use it at anytime, more info here                                                                                     |
 | entity          | `object`                                                                        | The debounced value of the entity                                                                                                                 |
 | validate        | ``(selector: keyof  Entity\|'all'\|'touched', justTest?: boolean) =>  boolean`` | The validation function. It accepts ``'all'``, ``'touched'`` or any property name from the entity.                                                |
@@ -92,7 +93,7 @@ The type, `(args: SmolChangeCallbackArgs<Entity>) => void`.
 | Property          | Type                               | Description                                                                                 |
 | ----------------- | ---------------------------------- | ------------------------------------------------------------------------------------------- |
 | event             | `SmolChangeEvent`                  | Is the event that triggered the last change                                                 |
-| value             | `any`                              | The value for that change, it can be overriden by configuration, by the `eventMap` function |
+| value             | `any`                              | The value for that change, it can be overridden by configuration, by the `eventMap` function |
 | selector          | `keyof Entity`                     | the property that was modified on this event                                                |
 | cfg               | `MoreGenericConfigForBind<Entity>` | the configuration bound to the field                                                        |
 | entity            | `Partial<Entity>`                  | the current state of the entity                                                             |
