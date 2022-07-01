@@ -61,9 +61,9 @@ return (<SmolForm<EntityType>
 ```
 
 ## The API
-There are two main ways to use `smol-forms`, the hook (**useSmolForm**) or the component (**SmolForm<T>**). Both have similar signatures (the component contains some visual aspects and a ref to the current instance of the engine).
-I chose to provide those two endpoints, so you can use what feels more comfortable to you.
-The API core is the hook, so there are no surprises when using it. Choose whatever you like and be happy.
+There are two main ways to use `smol-forms` a hook (**useSmolForm**) and a component (**SmolForm<T>**). Both have similar signatures (the component contains some visual aspects and a ref to the current instance of the engine).
+I chose to provide those two endpoints, so you can use what feels more comfortable. Just mind that the hook is the core, the component encapsulates it and adds visual support.
+There shouldnt be any surprises when using component or the hook. Choose whatever you like and be happy.
 ### The useSmolForm hook
 This hook is the central point of the lib. It concerns itself with entity `validation`, entity `binding`, and the entity `value`.
 
