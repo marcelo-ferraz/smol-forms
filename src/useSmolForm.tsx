@@ -13,7 +13,6 @@ import {
     FormHookProps,
     FormHookResult,
     ValidationErrors,
-    MuiBindProps,
     MinPropsToBind,
     SmolInputChangeHandler,
     Bind,
@@ -35,7 +34,7 @@ export const DEFAULT_INPUT_DELAY = 100;
 
 function useSmolForms<
     Entity,
-    FieldBoundProps extends MinPropsToBind = MuiBindProps<Entity>
+    FieldBoundProps extends MinPropsToBind = MinPropsToBind
 >({
     initial = {},
     onValidationError,

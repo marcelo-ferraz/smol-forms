@@ -1,7 +1,7 @@
 /* eslint-disable no-bitwise */
 import { FireObject, fireEvent } from '@testing-library/react';
 import { act } from 'react-dom/test-utils';
-import { FormHookResult, MuiBindProps } from '../types';
+import { FormHookResult, MinPropsToBind } from '../types';
 import { DEFAULT_INPUT_DELAY } from '../useSmolForm';
 
 const DELAY_PADDING = DEFAULT_INPUT_DELAY * 0.3;
@@ -60,7 +60,7 @@ export type TestEntity = Partial<{
 }>;
 
 export const changeFromBind = (
-    boundProps: MuiBindProps<TestEntity>,
+    boundProps: MinPropsToBind,
     value: string,
 ) => act(
     () => {
@@ -73,7 +73,7 @@ export const changeFromBind = (
 );
 
 export const blurFromBind = (
-    boundProps: MuiBindProps<TestEntity>,
+    boundProps: MinPropsToBind,
 ) => act(
     () => {
         boundProps.onBlur();
@@ -110,7 +110,7 @@ export const trigger = {
 export const getDisplayNValue = (
     key: keyof TestEntity,
     { current }
-    : { current: FormHookResult<TestEntity, MuiBindProps<TestEntity>>},
+    : { current: FormHookResult<TestEntity, MinPropsToBind>},
 ) => [
     current.bind(key).value,
     current.entity[key],
@@ -119,7 +119,7 @@ export const getDisplayNValue = (
 export const getDebouncedDisplayNValue = (
     key: keyof TestEntity,
     { current }
-    : { current: FormHookResult<TestEntity, MuiBindProps<TestEntity>>},
+    : { current: FormHookResult<TestEntity, MinPropsToBind>},
 ) => {
     jest.runAllTimers();
     jest.advanceTimersByTime(500);

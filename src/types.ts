@@ -6,7 +6,7 @@ type OnlyOneProp<T> = keyof T extends infer K
     : never
     : never;
 
-export type MuiBindProps<Entity> = MinPropsToBind & {
+export type MuiBindProps = MinPropsToBind & {
     error: boolean;
     name: string;
     helperText: string;

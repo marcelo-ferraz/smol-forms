@@ -9,7 +9,7 @@ import useSmolForms from './useSmolForm';
 
 function SmolFormInner<
     Entity,
-    R extends MinPropsToBind = MuiBindProps<Entity>
+    R extends MinPropsToBind = MinPropsToBind
 >({
     initial = {},
     form,

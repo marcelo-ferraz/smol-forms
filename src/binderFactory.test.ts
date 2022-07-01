@@ -1,7 +1,7 @@
 import binderFactory from './binderFactory';
 import { generateChars, GenFlags, TestEntity } from './test/helpers';
 import {
-    BindAdapter, BindArgs, MuiBindProps, DisplayNValue, ValidationErrors,
+    BindAdapter, BindArgs, DisplayNValue, ValidationErrors, MinPropsToBind,
 } from './types';
 
 import defaultBindAdapter from './bindAdapters';
@@ -27,7 +27,7 @@ jest.mock('./inputTypes.ts', () => {
 describe('binderFactory', () => {
     let testEnt: DisplayNValue<TestEntity> = null;
     const noErrors: ValidationErrors<TestEntity> = {};
-    const noAdapter: BindAdapter<TestEntity, MuiBindProps<TestEntity>> = null;
+    const noAdapter: BindAdapter<TestEntity> = null;
 
     beforeEach(() => {
         testEnt = {
@@ -47,7 +47,7 @@ describe('binderFactory', () => {
             const onBlurSpy = jest.fn();
             const bind = binderFactory<
                 TestEntity,
-                MuiBindProps<TestEntity>
+                MinPropsToBind
             >(testEnt, noErrors, noAdapter, onChangeSpy, onBlurSpy);
 
             const expectedSelector = 'id';
@@ -68,7 +68,7 @@ describe('binderFactory', () => {
             const customAdapter = jest.fn();
             const bind = binderFactory<
                 TestEntity,
-                MuiBindProps<TestEntity>
+                MinPropsToBind
             >(testEnt, noErrors, customAdapter, onChangeSpy, onBlurSpy);
 
             const expectedSelector = 'id';
@@ -94,7 +94,7 @@ describe('binderFactory', () => {
 
             const bind = binderFactory<
                 TestEntity,
-                MuiBindProps<TestEntity>
+                MinPropsToBind
             >(testEnt, noErrors, noAdapter, onChangeSpy, onBlurSpy);
 
             bind.int(expectedSelector);
@@ -116,7 +116,7 @@ describe('binderFactory', () => {
 
             const bind = binderFactory<
                 TestEntity,
-                MuiBindProps<TestEntity>
+                MinPropsToBind
             >(testEnt, noErrors, noAdapter, onChangeSpy, onBlurSpy);
 
             bind.int(selector);
@@ -138,7 +138,7 @@ describe('binderFactory', () => {
 
             const bind = binderFactory<
                 TestEntity,
-                MuiBindProps<TestEntity>
+                MinPropsToBind
             >(testEnt, noErrors, noAdapter, onChangeSpy, onBlurSpy);
 
             bind.int(expectedSelector);
@@ -161,7 +161,7 @@ describe('binderFactory', () => {
 
             const bind = binderFactory<
                 TestEntity,
-                MuiBindProps<TestEntity>
+                MinPropsToBind
             >(testEnt, noErrors, noAdapter, onChangeSpy, onBlurSpy);
 
             bind.float(selector);
@@ -183,7 +183,7 @@ describe('binderFactory', () => {
 
             const bind = binderFactory<
                 TestEntity,
-                MuiBindProps<TestEntity>
+                MinPropsToBind
             >(testEnt, noErrors, noAdapter, onChangeSpy, onBlurSpy);
 
             bind.nullable(selector);

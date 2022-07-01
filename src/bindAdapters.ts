@@ -7,7 +7,7 @@ import {
 
 export const DEFAULT_VALUE = '';
 
-export const muiAdapter = <Entity>(args: BindArgs<Entity>) : MuiBindProps<Entity> => {
+export const muiAdapter = <Entity>(args: BindArgs<Entity>) : MuiBindProps => {
     const name = (args.selector ?? new Date()).toString();
 
     const def = defaultAdapter(args);

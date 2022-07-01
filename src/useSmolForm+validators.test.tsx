@@ -3,9 +3,9 @@ import { randomInt } from 'crypto';
 import cases from 'jest-in-case';
 import { muiAdapter } from './bindAdapters';
 import {
-    changeFromBind, blurFromBind, generateChars, generateFloat, generateInt, TestEntity, trigger, DELAY_PLUS_PADDING,
+    changeFromBind, blurFromBind, generateChars, generateFloat, generateInt, TestEntity, DELAY_PLUS_PADDING,
 } from './test/helpers';
-import { Validator } from './types';
+import { MuiBindProps, Validator } from './types';
 import useSmolForm from './useSmolForm';
 import {
     DEFAULT_EMAIL_MSG, DEFAULT_FLOAT_MSG, DEFAULT_GENERIC_MSG, DEFAULT_INT_MSG, DEFAULT_REQUIRED_MSG, isEmail, isFloat, isInt, isRequired, pattern, regexes,
@@ -158,7 +158,7 @@ describe('integration: useSmolForm hook + validators', () => {
     });
 
     it('should save the state and render the errors on the helper text', () => {
-        const { result } = renderHook(() => useSmolForm<TestEntity>({
+        const { result } = renderHook(() => useSmolForm<TestEntity, MuiBindProps>({
             adapter: muiAdapter,
         }));
 

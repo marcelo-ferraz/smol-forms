@@ -6,6 +6,7 @@ import { DEFAULT_VALUE, muiAdapter } from './bindAdapters';
 import {
     blurFromBind, changeFromBind, getDisplayNValue, TestEntity,
 } from './test/helpers';
+import { MuiBindProps } from './types';
 
 jest.useFakeTimers();
 
@@ -288,7 +289,7 @@ describe('hook: useSmolForm', () => {
                     result.current.bind({ [selector]: [validator1, validator2] }),
                     '2',
                 );
-debugger;
+
                 blurFromBind(
                     result.current.bind.int({ [selector]: [validator1, validator2] }),
                 );
@@ -363,7 +364,7 @@ debugger;
         });
 
         it('should save the state and render the errors on the helper text', () => {
-            const { result } = renderHook(() => useSmolForm<TestEntity>({
+            const { result } = renderHook(() => useSmolForm<TestEntity, MuiBindProps>({
                 adapter: muiAdapter,
             }));
             const selector = 'strValue';

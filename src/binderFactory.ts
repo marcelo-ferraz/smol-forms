@@ -13,7 +13,6 @@ import {
     NumberArgs,
     BindAdapter,
     OnBindingCallback,
-    Runnable,
 } from './types';
 
 function binderFactory<
