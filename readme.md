@@ -61,9 +61,8 @@ return (<SmolForm<EntityType>
 ```
 
 ## The API
-There are two main ways to use `smol-forms` a hook (**useSmolForm**) and a component (**SmolForm<T>**). Both have similar signatures (the component contains some visual aspects and a ref to the current instance of the engine).
-I chose to provide those two endpoints, so you can use what feels more comfortable. Just mind that the hook is the core, the component encapsulates it and adds visual support.
-There shouldnt be any surprises when using component or the hook. Choose whatever you like and be happy.
+There are two main ways to use `smol-forms` a hook, **useSmolForm**, and a component, **SmolForm<T>**. The hook is the core, while the component encapsulates it and adds visual support. The choice between using smol-forms as a hook or as a component comes down to personal preference.
+  
 ### The useSmolForm hook
 This hook is the central point of the lib. It concerns itself with entity `validation`, entity `binding`, and the entity `value`.
 
@@ -125,8 +124,7 @@ const testAllFields = validate('all', true);
 const testAllFields = validate('age', true);
 ```
 
-> Please note that the validate function won't throw an exception if the field doesn't have a validator or is bound to a field.     
-> Meaning if there are no validators bound to the property, it just returns `null`, because nothing was done.
+> Note, the validate function won't throw an exception if the field has no validator, or the property is not bound to a field. It'll simply return a null response as nothing was done.
 
 ### The validation state 
 The state validation is just a dictionary with the same fields but arrays of strings with the description of the error found.
