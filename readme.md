@@ -79,6 +79,27 @@ This hook is the central point of the lib. It concerns itself with entity `valid
 | errors          | ``ValidationErrors<T>``                                                         | The validation errors. Its a key and `string[]` dictionary.                                                                                       |
 | setErrors       | ``Dispatch<SetStateAction<ValidationErrors<T>>>``                               | A dispatch to set errors yourself.                                                                                                                |
 
+## The state bit
+### The debounced entity state
+This is to ensure that neither time-consuming tasks or callbacks are fired too often. As much of the framework is about state synchronization, a lack of control here can create race conditions.
+The default delay is _`100ms`_.
+
+### The state change callback `onChange`
+Both hook and component have a callback for when the state is updated. 
+The type, `(args: SmolChangeCallbackArgs<Entity>) => void`.
+
+#### The args Object
+| Property          | Type                               | Description                                                                                 |
+| ----------------- | ---------------------------------- | ------------------------------------------------------------------------------------------- |
+| event             | `SmolChangeEvent`                  | Is the event that triggered the last change                                                 |
+| value             | `any`                              | The value for that change, it can be overriden by configuration, by the `eventMap` function |
+| selector          | `keyof Entity`                     | the property that was modified on this event                                                |
+| cfg               | `MoreGenericConfigForBind<Entity>` | the configuration bound to the field                                                        |
+| entity            | `Partial<Entity>`                  | the current state of the entity                                                             |
+| prevEntity        | `Partial<Entity>`                  | the previous state of the entity                                                            |
+| entityDisplay     | `Partial<Entity>`                  | the current state of the entity fields display data                                         |
+| prevEntityDisplay | `Partial<Entity>`                  | the current state of the entity fields display data                                         |
+
 ## The Validation bit
 The goal is to support validation functions. The lib does comes with some default validators, please check it [here](#built-in-validators).    
 There are four different parts to interact with:
@@ -100,7 +121,7 @@ const testAllFields = validate('age', true);
 > Is important to note that the validate function won't throw an exception if the field doesn't have a validator or is bound to a field.     
 > Meaning if there are no validators bound to the property, it just returns `null`, because nothing was done.
 
-## The validation state 
+### The validation state 
 The validation state is just a dictionary with the same fields but arrays of strings with the description of the error found.
 
 I reckon that a visual representation speaks volumes:
@@ -135,33 +156,13 @@ I reckon that a visual representation speaks volumes:
 </table>
 
 
-## The validation state change callback `onValidationError`
+### The validation state change callback `onValidationError`
 Both hook and component have a callback for when the error state is updated. 
 The type is a `(errors: ValidationErrors<Entity>) => void`, where `errors` is the validation state at that moment.     
 
 It will be triggered whenever the `validation` function is called.
 
 > If triggered by the **_onBlur_** event, the validation will be queued to be executed after the debounced delay, and that will trigger this callback afterwards
-
-## The debounced entity state
-This is to ensure that neither time-consuming tasks or callbacks are fired too often. As much of the framework is about state synchronization, a lack of control here can create race conditions.
-The default delay is _`100ms`_.
-
-## The state change callback `onChange`
-Both hook and component have a callback for when the state is updated. 
-The type, `(args: SmolChangeCallbackArgs<Entity>) => void`.
-
-### The args Object
-| Property          | Type                               | Description                                                                                 |
-| ----------------- | ---------------------------------- | ------------------------------------------------------------------------------------------- |
-| event             | `SmolChangeEvent`                  | Is the event that triggered the last change                                                 |
-| value             | `any`                              | The value for that change, it can be overriden by configuration, by the `eventMap` function |
-| selector          | `keyof Entity`                     | the property that was modified on this event                                                |
-| cfg               | `MoreGenericConfigForBind<Entity>` | the configuration bound to the field                                                        |
-| entity            | `Partial<Entity>`                  | the current state of the entity                                                             |
-| prevEntity        | `Partial<Entity>`                  | the previous state of the entity                                                            |
-| entityDisplay     | `Partial<Entity>`                  | the current state of the entity fields display data                                         |
-| prevEntityDisplay | `Partial<Entity>`                  | the current state of the entity fields display data                                         |
 
    
 ## Built-in validators
