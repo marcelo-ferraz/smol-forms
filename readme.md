@@ -103,50 +103,66 @@ const testAllFields = validate('age', true);
 ## The validation state 
 The validation state is just a dictionary with the same fields but arrays of strings with the description of the error found.
 
+I reckon that a visual representation speaks volumes:
 <table>
 	<tr>
 		<td> The object </td>
-		<td> The possible error map </td>
+		<td> What the error map could look like</td>
 	</tr>
 	<tr>
 		<td>
 
-		```ts
-			const entity = {
-				id: 22,
-				name: 'joe'
-			}
-		```
-			
-			
+```js
+{
+  id: 22,
+  name: 'joe'
+}
+```		
 </td>
 <td>
 
-
-```ts
-const entity = {
-	id: [ 
-		'This field is required!',
-		'This field is a number!'
-	],
-	name: [ 'this field is required' ],
+```js
+{
+  id: [ 
+    'This field is required!',
+    'This field is a number!'
+  ],
+  name: [ 'this field is required' ],
 }
 ```
-
-
 </td>
 </tr>
 </table>
 
 
-## The validation state change callback
+## The validation state change callback `onValidationError`
+Both hook and component have a callback for when the error state is updated. 
+The type is a `(errors: ValidationErrors<Entity>) => void`, where `errors` is the validation state at that moment.     
 
-  - a callback for the change event of those validation error 
- - debouncing
-  - the entity value
-  - the change event
- - binding
-  -   
+It will be triggered whenever the `validation` function is called.
+
+> If triggered by the **_onBlur_** event, the validation will be queued to be executed after the debounced delay, and that will trigger this callback afterwards
+
+## The debounced entity state
+This is to ensure that neither time-consuming tasks or callbacks are fired too often. As much of the framework is about state synchronization, a lack of control here can create race conditions.
+The default delay is _`100ms`_.
+
+## The state change callback `onChange`
+Both hook and component have a callback for when the state is updated. 
+The type, `(args: SmolChangeCallbackArgs<Entity>) => void`.
+
+### The args Object
+| Property          | Type                               | Description                                                                                 |
+| ----------------- | ---------------------------------- | ------------------------------------------------------------------------------------------- |
+| event             | `SmolChangeEvent`                  | Is the event that triggered the last change                                                 |
+| value             | `any`                              | The value for that change, it can be overriden by configuration, by the `eventMap` function |
+| selector          | `keyof Entity`                     | the property that was modified on this event                                                |
+| cfg               | `MoreGenericConfigForBind<Entity>` | the configuration bound to the field                                                        |
+| entity            | `Partial<Entity>`                  | the current state of the entity                                                             |
+| prevEntity        | `Partial<Entity>`                  | the previous state of the entity                                                            |
+| entityDisplay     | `Partial<Entity>`                  | the current state of the entity fields display data                                         |
+| prevEntityDisplay | `Partial<Entity>`                  | the current state of the entity fields display data                                         |
+
    
 ## Built-in validators
 <em>under construction</em>
