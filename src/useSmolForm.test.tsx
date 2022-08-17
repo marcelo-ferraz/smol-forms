@@ -391,7 +391,7 @@ describe('hook: useSmolForm', () => {
         });
 
         describe('validate func', () => {
-            it('should return null if the property doesn\'t have a validator', () => {
+            it('should return true if the property doesn\'t have a validator', () => {
                 const { result } = renderHook(() => useSmolForm<TestEntity>({
                     adapter: muiAdapter,
                 }));
@@ -405,7 +405,7 @@ describe('hook: useSmolForm', () => {
                     isValid = result.current.validate(selector);
                 });
 
-                expect(isValid).toBe(null);
+                expect(isValid).toBe(true);
             });
         });
     });

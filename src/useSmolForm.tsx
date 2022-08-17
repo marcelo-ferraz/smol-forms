@@ -20,6 +20,7 @@ import {
     SmolChangeCallbackArgs,
     OnBindingCallback,
     FieldsMetadata,
+    ValidatorReturn,
 } from './types';
 
 // I could just have the spread, but it wouldnt copy nested objs
@@ -30,7 +31,7 @@ type ChangeArgs<Entity> = Omit<
     'entityDisplay' | 'entity'
 >;
 
-export const DEFAULT_INPUT_DELAY = 100;
+export const DEFAULT_INPUT_DELAY = 50;
 
 function useSmolForms<
     Entity,
@@ -151,7 +152,7 @@ function useSmolForms<
             ent: DisplayNValue<Entity>,
             justTest = false,
         ) => {
-            let isValid: boolean = null;
+            let isValid = true;
 
             const newErrors = selectorsNvalues.reduce(
                 (errs, [selector, value]) => {
@@ -159,7 +160,7 @@ function useSmolForms<
                     // // const cfg = fieldsMetadata[selector];
                     const val = value ?? ent.display[selector];
 
-                    const itemErrors: string[] = runOrReduce<string>(
+                    const itemErrors: ValidatorReturn[] = runOrReduce<ValidatorReturn>(
                         cfg?.validators, {
                             // the visual value
                             value: val,
@@ -294,11 +295,19 @@ function useSmolForms<
         }, [adapter, delay, entityState, fieldChangeHandler, validate, validationErrors],
     );
 
+    const setEntity = useCallback((ent: Entity) => {
+        setEntityState({
+            value: oldSchoolDeepCopy(ent),
+            display: oldSchoolDeepCopy(ent),
+        });
+    }, []);
+
     return {
         bind,
         validate,
         emitFieldChange: fieldChangeHandler,
         entity: entity.value,
+        setEntity,
         errors: validationErrors,
         setErrors: setValidationErrors,
     };

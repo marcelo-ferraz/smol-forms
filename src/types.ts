@@ -45,10 +45,12 @@ export type ValidatorArgs<
     entity: Entity,
 }>;
 
+export type ValidatorReturn = string | undefined | false | null;
+
 export type Validator<
     Entity,
     Key extends keyof Entity = keyof Entity
-> = Runnable<string, ValidatorArgs<Entity, Key>>;
+> = Runnable<ValidatorReturn, ValidatorArgs<Entity, Key>>;
 
 export type BindingInput<Entity> = keyof Entity
 | BindingOptionsObj<Entity>
@@ -146,6 +148,7 @@ export type FormHookResult<
     bind: Bind<Entity, FieldBoundProps>;
     emitFieldChange: SmolInputChangeHandler<Entity>;
     entity: Partial<Entity>;
+    setEntity(ent: Partial<Entity>): void,
     validate(selector: keyof Entity | 'all' | 'touched', justTest?: boolean): boolean,
     errors: ValidationErrors<Entity>;
     setErrors: Dispatch<SetStateAction<ValidationErrors<Entity>>>;
