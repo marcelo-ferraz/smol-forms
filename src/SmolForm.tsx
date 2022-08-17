@@ -25,6 +25,7 @@ function SmolFormInner<
 ref: ForwardedRef<SmolFormRef<Entity, R>>): ReactElement {
     const {
         entity,
+        setEntity,
         errors,
         bind,
         setErrors,
@@ -41,11 +42,12 @@ ref: ForwardedRef<SmolFormRef<Entity, R>>): ReactElement {
     useImperativeHandle(ref, () => ({
         bind,
         entity,
+        setEntity,
         errors,
         setErrors,
         emitFieldChange,
         validate,
-    }), [bind, entity, errors, setErrors, emitFieldChange, validate]);
+    }), [bind, entity, setEntity, errors, setErrors, emitFieldChange, validate]);
 
     return (
         <SmolFormFactory<Entity, R>
